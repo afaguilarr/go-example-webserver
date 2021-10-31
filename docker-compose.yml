@@ -5,9 +5,17 @@ services:
     container_name: webserver
     image: webserver
     build:
-      context: .
-    command: go run .
-    # volumes:
-    #   - .:/app
+      context: ./webserver
+    command: go run ./main
+    volumes:
+      - ./webserver/main:/app/main
     ports:
       - "8080:8080"
+
+  python_tests:
+    container_name: python_tests
+    image: python_tests
+    build:
+      context: ./test
+    volumes:
+      - ./test:/app

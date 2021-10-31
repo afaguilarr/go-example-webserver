@@ -1,0 +1,3 @@
+pytest-bdd
+requests
+pytest-html-reporter

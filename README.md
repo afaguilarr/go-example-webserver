@@ -8,3 +8,8 @@ It's integrated with docker so just running the following commands should be eno
 docker-compose build
 docker-compose up
 ```
+
+To run the functional tests written in python just run:
+```bash
+docker-compose run python_tests pytest
+```
