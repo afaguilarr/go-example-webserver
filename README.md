@@ -13,3 +13,5 @@ To run the functional tests written in python just run:
 ```bash
 docker-compose run python_tests pytest
 ```
+
+Every change has to be made via a Pull Request, and CircleCI checks are needed.
