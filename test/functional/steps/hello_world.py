@@ -9,9 +9,9 @@ def the_user_makes_an_example_api_call(steps_context: StepsContext):
     steps_context.request = get("http://webserver:8080")
 
 
-@then("the API responds successfully")
-def the_api_responds_successfully(steps_context: StepsContext):
-    assert steps_context.request.status_code == 200
+@when('the user requests the hello world endpoint with a trailing slash')
+def the_user_makes_an_example_api_call(steps_context: StepsContext):
+    steps_context.request = get("http://webserver:8080/")
 
 
 @then('the response body contains a hello world message')
