@@ -22,9 +22,11 @@ jobs:
           command: "docker-compose up -d"
       - run:
           name: "Run tests"
-          command: "docker-compose run python_tests pytest"
+          command: |
+            mkdir test/report/xml_results
+            docker-compose run python_tests pytest --junitxml=report/xml_results/junit.xml
       - store_test_results:
-          path: test/report/output.json
+          path: test/report/xml_results
       - store_artifacts:
           path: test/report/pytest_html_report.html
           destination: pytest_html_report.html
