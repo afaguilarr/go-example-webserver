@@ -23,6 +23,7 @@ jobs:
       - run:
           name: "Run tests"
           command: |
+            mkdir test/report
             mkdir test/report/xml_results
             docker-compose run python_tests pytest --junitxml=report/xml_results/junit.xml
       - store_test_results:
