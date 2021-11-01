@@ -18,7 +18,8 @@ jobs:
           command: "docker-compose build"
       - run:
           name: "Spin up Containers"
-          command: "docker-compose up"
+          # Detached to avoid that this step is run an indefinite amount of time
+          command: "docker-compose up -d"
       - run:
           name: "Run tests"
           command: "docker-compose run python_tests pytest"
