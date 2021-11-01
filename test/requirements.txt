@@ -1,3 +1,4 @@
 pytest-bdd
 requests
 pytest-html-reporter
+pylint

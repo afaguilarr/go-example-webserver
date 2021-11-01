@@ -1,5 +1,6 @@
+"""Module containing the invocation of all tests derived from the feature files"""
+# Third Party
 from pytest_bdd import scenarios
-from functional.steps import *
 
 # run all tests
 scenarios('features')
