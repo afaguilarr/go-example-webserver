@@ -92,8 +92,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Something went wrong with the webserver: %s", err)
 	}
-	asd_asd_asd := func() string {
-		return "holi"
-	}
-	log.Println(asd_asd_asd())
 }
