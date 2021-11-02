@@ -13,6 +13,20 @@ services:
     ports:
       - "8080:8080"
 
+  # This works, so we have 2 different containers working with
+  # the same code, let's try that when playing with load balancers
+  # webserver2:
+  #   container_name: webserver2
+  #   image: webserver
+  #   build:
+  #     context: ./webserver
+  #   command: go run ./main
+  #   volumes:
+  #     - ./webserver/main:/app/main
+  #     - ./webserver/bin:/app/bin
+  #   ports:
+  #     - "8081:8080"
+
   python_tests:
     container_name: python_tests
     image: python_tests
