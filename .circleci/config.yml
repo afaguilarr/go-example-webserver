@@ -26,7 +26,7 @@ jobs:
       - run:
           name: "Format Go Code"
           command: "docker-compose run webserver sh bin/go_fmt.sh"
-        - run:
+      - run:
           name: "Go Static Check"
           command: "docker-compose run webserver sh bin/staticcheck.sh"
       - run:
