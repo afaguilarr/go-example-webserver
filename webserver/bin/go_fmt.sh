@@ -1,6 +1,5 @@
-files=$(go fmt ./main)
-if files; then
-  echo files
+if $(go fmt ./main); then
+  go fmt ./main
   echo "Format was necessary"
   exit 1
 else
