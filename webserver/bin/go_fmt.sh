@@ -1,4 +1,4 @@
-if [[ $(go fmt ./main) ]]; then
+if $(go fmt ./main); then
   echo "Format was necessary" 
   exit 1
 else
