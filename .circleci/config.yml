@@ -31,11 +31,11 @@ jobs:
       - run:
           name: "Run unit tests"
           command: |
-            mkdir webserver/report
-            mkdir webserver/report/xml_results
-            docker-compose run webserver go test ./... go-junit-report > report/xml_results/report.xml
+            mkdir webserver/main/report
+            mkdir webserver/main/report/xml_results
+            docker-compose run webserver go test ./... | go-junit-report > main/report/xml_results/report.xml
       - store_test_results:
-          path: webserver/report/xml_results
+          path: webserver/main/report/xml_results
       - run:
           name: "Spin up Containers"
           # Detached to avoid that this step is run an indefinite amount of time
