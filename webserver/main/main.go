@@ -73,14 +73,14 @@ func helloName(w http.ResponseWriter, r *http.Request, name string) {
 	}
 }
 
-func main(){
+func main() {
 	endpoints := []endpoint{
 		basicEndpoint{path: "/", function: helloWorld},
 		basicEndpoint{path: "/name", function: helloGenericName},
 		endpointWithPattern{
-			basePath: "/name/",
-			pattern: "(?P<name>[A-Za-z0-9]+)",
-			baseFunction: helloGenericName,
+			basePath:        "/name/",
+			pattern:         "(?P<name>[A-Za-z0-9]+)",
+			baseFunction:    helloGenericName,
 			patternFunction: helloName,
 		},
 	}
@@ -92,4 +92,8 @@ func main(){
 	if err != nil {
 		log.Fatalf("Something went wrong with the webserver: %s", err)
 	}
+	asd_asd_asd := func() string {
+		return "holi"
+	}
+	log.Println(asd_asd_asd)
 }
