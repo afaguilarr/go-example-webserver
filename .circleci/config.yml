@@ -30,7 +30,7 @@ jobs:
           command: "docker-compose run python_tests sh bin/pylint.sh"
       - run:
           name: "Run unit tests"
-          command: "docker-compose run webserver "
+          command: "docker-compose run webserver go test ./..."
       - run:
           name: "Spin up Containers"
           # Detached to avoid that this step is run an indefinite amount of time
