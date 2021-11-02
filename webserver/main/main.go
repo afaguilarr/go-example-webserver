@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type world struct{
+type world struct {
 	Name string `json:"name"`
 }
 
@@ -95,5 +95,5 @@ func main() {
 	asd_asd_asd := func() string {
 		return "holi"
 	}
-	log.Println(asd_asd_asd)
+	log.Println(asd_asd_asd())
 }

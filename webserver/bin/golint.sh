@@ -1,2 +1,0 @@
-go fmt ./main
-echo $?
