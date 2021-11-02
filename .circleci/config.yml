@@ -22,7 +22,7 @@ jobs:
           command: "docker-compose up -d"
       - run:
           name: "Go Vet"
-          command: "docker-compose run webserver go vet ./main"
+          command: "docker-compose run webserver sh bin/go_vet.sh"
       - run:
           name: "Lint Go Code"
           command: "docker-compose run webserver sh bin/golint.sh"
