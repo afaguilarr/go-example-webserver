@@ -1,8 +1,7 @@
-if $(go fmt ./main); then
-  go fmt ./main
-  echo "Format was necessary"
+if [ $(go fmt ./main) ]; then
+  echo "Formatting was necessary"
   exit 1
 else
-  echo "No format needed" 
+  echo "No formatting needed" 
   exit 0
 fi

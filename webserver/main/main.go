@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type world struct {
+type world struct{
 	Name string `json:"name"`
 }
 

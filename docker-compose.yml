@@ -9,6 +9,7 @@ services:
     command: go run ./main
     volumes:
       - ./webserver/main:/app/main
+      - ./webserver/bin:/app/bin
     ports:
       - "8080:8080"
 
