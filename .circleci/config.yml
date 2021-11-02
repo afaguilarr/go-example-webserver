@@ -30,7 +30,12 @@ jobs:
           command: "docker-compose run python_tests sh bin/pylint.sh"
       - run:
           name: "Run unit tests"
-          command: docker-compose run webserver go test ./...
+          command: |
+            mkdir webserver/main/report
+            docker-compose run webserver sh bin/go_test.sh
+      - store_artifacts:
+          path: webserver/main/report/coverage.html
+          destination: coverage.html
       - run:
           name: "Spin up Containers"
           # Detached to avoid that this step is run an indefinite amount of time
