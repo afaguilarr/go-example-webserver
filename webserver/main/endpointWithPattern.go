@@ -7,7 +7,7 @@ import (
 	"regexp"
 )
 
-type endpointWithPattern struct{
+type endpointWithPattern struct {
 	basePath        string
 	pattern         string
 	baseFunction    func(http.ResponseWriter, *http.Request)
@@ -34,6 +34,6 @@ func (e endpointWithPattern) handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (e endpointWithPattern) getPath() string{
+func (e endpointWithPattern) getPath() string {
 	return e.basePath
 }

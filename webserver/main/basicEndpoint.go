@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-type basicEndpoint struct{
+type basicEndpoint struct {
 	path     string
 	function func(w http.ResponseWriter, r *http.Request)
 }
@@ -17,6 +17,6 @@ func (e basicEndpoint) handler(w http.ResponseWriter, r *http.Request) {
 	e.function(w, r)
 }
 
-func (e basicEndpoint) getPath() string{
+func (e basicEndpoint) getPath() string {
 	return e.path
 }

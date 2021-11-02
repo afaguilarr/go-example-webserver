@@ -73,14 +73,14 @@ func helloName(w http.ResponseWriter, r *http.Request, name string) {
 	}
 }
 
-func main(){
+func main() {
 	endpoints := []endpoint{
 		basicEndpoint{path: "/", function: helloWorld},
 		basicEndpoint{path: "/name", function: helloGenericName},
 		endpointWithPattern{
-			basePath: "/name/",
-			pattern: "(?P<name>[A-Za-z0-9]+)",
-			baseFunction: helloGenericName,
+			basePath:        "/name/",
+			pattern:         "(?P<name>[A-Za-z0-9]+)",
+			baseFunction:    helloGenericName,
 			patternFunction: helloName,
 		},
 	}
