@@ -1,4 +1,4 @@
-package main
+package endpoint
 
 import (
 	"fmt"
@@ -6,17 +6,17 @@ import (
 	"net/http"
 )
 
-type endpoint interface {
-	getPath() string
-	handler(w http.ResponseWriter, r *http.Request)
+type Endpoint interface {
+	GetPath() string
+	Handler(w http.ResponseWriter, r *http.Request)
 }
 
-func handle(e endpoint) {
-	log.Printf("Handling '%s' endpoint", e.getPath())
-	http.HandleFunc(e.getPath(), e.handler)
+func Handle(e Endpoint) {
+	log.Printf("Handling '%s' endpoint", e.GetPath())
+	http.HandleFunc(e.GetPath(), e.Handler)
 }
 
-func errorHandler(w http.ResponseWriter, r *http.Request, status int, message string) {
+func ErrorHandler(w http.ResponseWriter, r *http.Request, status int, message string) {
 	log.Println("Some http error is happening")
 	w.WriteHeader(status)
 	var err error
