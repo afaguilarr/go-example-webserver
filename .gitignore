@@ -2,3 +2,4 @@
 **/.pytest_cache
 **/__pycache__
 **/report
+**/.DS_Store

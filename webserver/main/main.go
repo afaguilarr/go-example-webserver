@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"goWebServer/main/endpoint"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -30,14 +31,14 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		log.Printf("The request's body is\n%s\n", string(body))
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
+			endpoint.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
 			return
 		}
 
 		err = json.Unmarshal(body, &wo)
 		log.Printf("The parsed entity is\n%s\n", wo)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
+			endpoint.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
 			return
 		}
 
@@ -63,7 +64,7 @@ func helloGenericName(w http.ResponseWriter, r *http.Request) {
 
 func helloName(w http.ResponseWriter, r *http.Request, name string) {
 	if name == "personaFea" {
-		errorHandler(w, r, http.StatusNotFound, "Error 404, name personaFea is not available")
+		endpoint.ErrorHandler(w, r, http.StatusNotFound, "Error 404, name personaFea is not available")
 		return
 	}
 	log.Printf("Hello name called with name %s\n", name)
@@ -74,18 +75,18 @@ func helloName(w http.ResponseWriter, r *http.Request, name string) {
 }
 
 func main() {
-	endpoints := []endpoint{
-		basicEndpoint{path: "/", function: helloWorld},
-		basicEndpoint{path: "/name", function: helloGenericName},
-		endpointWithPattern{
-			basePath:        "/name/",
-			pattern:         "(?P<name>[A-Za-z0-9]+)",
-			baseFunction:    helloGenericName,
-			patternFunction: helloName,
+	endpoints := []endpoint.Endpoint{
+		endpoint.BasicEndpoint{Path: "/", Function: helloWorld},
+		endpoint.BasicEndpoint{Path: "/name", Function: helloGenericName},
+		endpoint.EndpointWithPattern{
+			BasePath:        "/name/",
+			Pattern:         "(?P<name>[A-Za-z0-9]+)",
+			BaseFunction:    helloGenericName,
+			PatternFunction: helloName,
 		},
 	}
 	for _, e := range endpoints {
-		handle(e)
+		endpoint.Handle(e, http.HandleFunc)
 	}
 	log.Println("Server starting!")
 	err := http.ListenAndServe(":8080", nil)
