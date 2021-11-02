@@ -24,7 +24,7 @@ jobs:
           name: "Go Vet"
           command: "docker-compose run webserver sh bin/go_vet.sh"
       - run:
-          name: "Lint Go Code"
+          name: "Format Go Code"
           command: "docker-compose run webserver sh bin/go_fmt.sh"
       - run:
           name: "Lint Python Code"
