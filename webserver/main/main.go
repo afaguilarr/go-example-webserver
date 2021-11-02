@@ -86,7 +86,7 @@ func main() {
 		},
 	}
 	for _, e := range endpoints {
-		endpoint.Handle(e)
+		endpoint.Handle(e, http.HandleFunc)
 	}
 	log.Println("Server starting!")
 	err := http.ListenAndServe(":8080", nil)
