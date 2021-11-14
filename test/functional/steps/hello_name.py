@@ -32,7 +32,7 @@ def the_response_body_contains_the_hello_name_data(name: str, steps_context: Ste
 def name_was_properly_stored(name: str, session: Engine):
     """xD"""
     result_set = session.execute("SELECT * FROM hello_world")
-    results = [r for r in result_set]
+    results = list(result_set)
     assert_equals(1, len(results))
     result = results[0]
     assert_not_none(result[0])
