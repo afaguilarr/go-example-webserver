@@ -16,3 +16,23 @@ docker-compose run python_tests pytest
 
 Every change has to be made via a Pull Request, and CircleCI checks are needed.
 Even for the repo administrators.
+
+To connect to the DataBase, use the following command:
+```bash
+docker-compose run postgres psql --host=postgres --username=${POSTGRES_USERNAME} --dbname=hello_world
+```
+
+To create a new DB migration use the following command:
+```bash
+docker-compose run webserver sh bin/goose_new_migration.sh ${MIGRATION_NAME}
+```
+
+To apply the db_migrations use the following command:
+```bash
+docker-compose run webserver sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+```
+
+To unapply the db_migrations use the following command:
+```bash
+docker-compose run webserver sh bin/goose_downgrade_migration.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+```

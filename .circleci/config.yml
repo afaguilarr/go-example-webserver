@@ -38,8 +38,13 @@ jobs:
           destination: coverage.html
       - run:
           name: "Spin up Containers"
-          # Detached to avoid that this step is run an indefinite amount of time
-          command: "docker-compose up -d"
+          command: |
+            mv postgres/.env.ci postgres/.env
+            docker-compose up -d
+        # Detached to avoid that this step is run an indefinite amount of time
+      - run:
+          name: "Set up DB"
+          command: "docker-compose run webserver sh bin/goose_apply_migrations.sh admin admin"
       - run:
           name: "Run functional tests"
           command: |

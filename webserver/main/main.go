@@ -1,12 +1,25 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"goWebServer/main/endpoint"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	_ "github.com/lib/pq"
+)
+
+var db *sql.DB
+
+const (
+	host     = "postgres"
+	port     = 5432
+	user     = "admin"
+	password = "admin"
+	dbname   = "hello_world"
 )
 
 type world struct {
@@ -63,18 +76,41 @@ func helloGenericName(w http.ResponseWriter, r *http.Request) {
 }
 
 func helloName(w http.ResponseWriter, r *http.Request, name string) {
+	log.Printf("Hello name called with name %s\n", name)
 	if name == "personaFea" {
 		endpoint.ErrorHandler(w, r, http.StatusNotFound, "Error 404, name personaFea is not available")
 		return
 	}
-	log.Printf("Hello name called with name %s\n", name)
-	_, err := fmt.Fprintf(w, "Hello %s", name)
+	sqlStatement := `INSERT INTO hello_world (hw_text) VALUES ($1) RETURNING id, hw_text`
+	id, hw_text := 0, ""
+	err := db.QueryRow(sqlStatement, name).Scan(&id, &hw_text)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("New hello_world record with ID '%v' and text '%s' was inserted\n", id, hw_text)
+	_, err = fmt.Fprintf(w, "Hello %s", name)
 	if err != nil {
 		log.Fatalf("Something went wrong with the 'Hello Name' for name %s: %s", name, err)
 	}
 }
 
+func createDBConnection() *sql.DB {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	log.Println("The connection to the DB was successful!")
+	return db
+}
+
 func main() {
+	db = createDBConnection()
+	defer db.Close()
 	endpoints := []endpoint.Endpoint{
 		endpoint.BasicEndpoint{Path: "/", Function: helloWorld},
 		endpoint.BasicEndpoint{Path: "/name", Function: helloGenericName},
