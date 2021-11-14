@@ -15,6 +15,6 @@ def steps_context() -> StepsContext:
 def session() -> Engine:
     """Function to create the base state of the postgres DB"""
     db_string = "postgresql://admin:admin@postgres:5432/hello_world"
-    db = create_engine(db_string)
-    db.execute("DELETE FROM hello_world") 
-    return db 
+    db_session = create_engine(db_string)
+    db_session.execute("DELETE FROM hello_world")
+    return db_session
