@@ -14,6 +14,11 @@ To run the functional tests written in python just run:
 docker-compose run python_tests pytest
 ```
 
+To run pylint use the following command:
+```bash
+docker-compose run python_tests sh bin/pylint.sh
+```
+
 Every change has to be made via a Pull Request, and CircleCI checks are needed.
 Even for the repo administrators.
 
