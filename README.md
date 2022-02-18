@@ -7,6 +7,7 @@ It's integrated with docker so just running the following commands should be eno
 ```bash
 docker-compose build
 docker-compose up
+docker-compose up -d # if you want to run the containers in the background 
 ```
 
 To run the functional tests written in python just run:
