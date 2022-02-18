@@ -1,15 +1,29 @@
 version: "3.2"
 
 services:
+  postgres:
+    container_name: postgres
+    image: 'postgres:latest'
+    restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
+    volumes:
+      - './postgres/data:/var/lib/postgresql/data'
+    env_file:
+      - ./postgres/.env
+    ports:
+      - '5432:5432'
+
   webserver:
     container_name: webserver
     image: webserver
     build:
       context: ./webserver
     command: go run ./main
+    depends_on:
+      - "postgres"
     volumes:
       - ./webserver/main:/app/main
       - ./webserver/bin:/app/bin
+      - ./webserver/db_migrations:/app/db_migrations
     ports:
       - "8080:8080"
 
