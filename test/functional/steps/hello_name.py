@@ -18,7 +18,7 @@ def random_name() -> str:
 @when('the user requests the hello name endpoint')
 def the_user_requests_hello_name_endpoint(name: str, steps_context: StepsContext):
     """xD"""
-    steps_context.request = get(f"http://webserver:80/name/{name}")
+    steps_context.request = get(f"http://webserver:8080/name/{name}")
 
 
 @then('the response body contains the hello name message')
