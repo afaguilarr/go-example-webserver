@@ -25,7 +25,7 @@ services:
       - ./webserver/bin:/app/bin
       - ./webserver/db_migrations:/app/db_migrations
     ports:
-      - "8080:8080"
+      - "80:8080"
 
   python_tests:
     container_name: python_tests
