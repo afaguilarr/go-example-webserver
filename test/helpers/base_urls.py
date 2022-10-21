@@ -1,3 +1,5 @@
+"""Helpers module including all base URLs"""
+
 WEBSERVER_BASE_URL = "http://webserver:8080"
 WEBSERVER_BASE_URL_TRAILING_SLASH = WEBSERVER_BASE_URL + "/"
 HELLO_NAME_ENDPOINT = WEBSERVER_BASE_URL_TRAILING_SLASH + "name"
