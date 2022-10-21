@@ -3,14 +3,18 @@
 This project aims to create an example go/golang web-server.
 Any feedback is welcome since this is a public project.
 
-It's integrated with docker so just running the following commands should be enough:
+The project is integrated with docker, then running the following commands after setting up a `.env` file at `go-example-webserver/postgres/.env`, should be enough (there is an example env file in the `go-example-webserver/postgres/` directory):
 ```bash
 docker-compose build
 docker-compose up
-docker-compose up -d # if you want to run the containers in the background 
+docker-compose up -d # if you want to run the containers in the background
 ```
 
-To run the functional tests written in python just run:
+To run the functional tests written in python, we have to set up the DB, in order to do that execute the following goose command:
+```bash
+docker-compose run webserver sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+```
+And then just run:
 ```bash
 docker-compose run python_tests pytest
 ```
