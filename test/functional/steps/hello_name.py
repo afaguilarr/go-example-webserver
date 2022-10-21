@@ -1,11 +1,10 @@
 """xD"""
 # Third Party
 from pytest_bdd import when, then, given
-from requests import get
 from sqlalchemy.engine.base import Engine
 
 # First Party
-from helpers import assert_equals, assert_not_none
+from helpers import assert_equals, assert_not_none, get_request, HELLO_NAME_ENDPOINT_PARAM
 from functional.steps_context import StepsContext
 
 
@@ -18,7 +17,7 @@ def random_name() -> str:
 @when('the user requests the hello name endpoint')
 def the_user_requests_hello_name_endpoint(name: str, steps_context: StepsContext):
     """xD"""
-    steps_context.request = get(f"http://webserver:8080/name/{name}", timeout=3)
+    steps_context.request = get_request(HELLO_NAME_ENDPOINT_PARAM.format(name))
 
 
 @then('the response body contains the hello name message')

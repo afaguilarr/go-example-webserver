@@ -4,20 +4,20 @@ from pytest_bdd import when, then
 from requests import get
 
 # First Party
-from helpers import assert_equals
+from helpers import assert_equals, get_request, WEBSERVER_BASE_URL, WEBSERVER_BASE_URL_TRAILING_SLASH
 from functional.steps_context import StepsContext
 
 
 @when('the user requests the hello world endpoint')
 def the_user_makes_an_example_api_call(steps_context: StepsContext):
     """Function to call the hello world endpoint"""
-    steps_context.request = get("http://webserver:8080", timeout=3)
+    steps_context.request = get_request(WEBSERVER_BASE_URL)
 
 
 @when('the user requests the hello world endpoint with a trailing slash')
 def the_user_makes_an_example_api_call_trailing_slash(steps_context: StepsContext):
     """Function to call the hello world endpoint with a trailing slash"""
-    steps_context.request = get("http://webserver:8080/", timeout=3)
+    steps_context.request = get_request(WEBSERVER_BASE_URL_TRAILING_SLASH)
 
 
 @then('the response body contains a hello world message')
