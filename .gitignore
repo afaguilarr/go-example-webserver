@@ -3,3 +3,5 @@
 **/__pycache__
 **/report
 **/.DS_Store
+**/postgres/data
+**/postgres/.env

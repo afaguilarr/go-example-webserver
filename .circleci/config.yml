@@ -15,7 +15,9 @@ jobs:
       - checkout
       - run:
           name: "Build Containers"
-          command: "docker-compose build"
+          command: |
+            cp postgres/.env.ci postgres/.env
+            docker-compose build
       - run:
           name: "Go Vet"
           command: "docker-compose run webserver sh bin/go_vet.sh"
@@ -38,8 +40,11 @@ jobs:
           destination: coverage.html
       - run:
           name: "Spin up Containers"
-          # Detached to avoid that this step is run an indefinite amount of time
           command: "docker-compose up -d"
+        # Detached to avoid that this step is run an indefinite amount of time
+      - run:
+          name: "Set up DB"
+          command: "docker-compose run webserver sh bin/goose_apply_migrations.sh admin admin"
       - run:
           name: "Run functional tests"
           command: |
