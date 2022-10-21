@@ -11,13 +11,13 @@ from functional.steps_context import StepsContext
 @when('the user requests the hello world endpoint')
 def the_user_makes_an_example_api_call(steps_context: StepsContext):
     """Function to call the hello world endpoint"""
-    steps_context.request = get("http://webserver:8080")
+    steps_context.request = get("http://webserver:8080", timeout=3)
 
 
 @when('the user requests the hello world endpoint with a trailing slash')
 def the_user_makes_an_example_api_call_trailing_slash(steps_context: StepsContext):
     """Function to call the hello world endpoint with a trailing slash"""
-    steps_context.request = get("http://webserver:8080/")
+    steps_context.request = get("http://webserver:8080/", timeout=3)
 
 
 @then('the response body contains a hello world message')
