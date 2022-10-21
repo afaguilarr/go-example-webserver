@@ -1,10 +1,10 @@
 """Module to include the step definitions related to the hello world feature"""
 # Third Party
 from pytest_bdd import when, then
-from requests import get
 
 # First Party
-from helpers import assert_equals, get_request, WEBSERVER_BASE_URL, WEBSERVER_BASE_URL_TRAILING_SLASH
+from helpers import (assert_equals, get_request, WEBSERVER_BASE_URL,
+                     WEBSERVER_BASE_URL_TRAILING_SLASH)
 from functional.steps_context import StepsContext
 
 
