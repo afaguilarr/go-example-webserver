@@ -3,7 +3,12 @@ version: "3.2"
 services:
   postgres:
     container_name: postgres
-    image: 'postgres:latest'
+    image: 'postgres:15'
+    # If this condition is met, the container will be considered healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname=${POSTGRES_DB} --username=${POSTGRES_USER}"]
+      interval: 5s
+      start_period: 1s
     restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
     volumes:
       - './postgres/data:/var/lib/postgresql/data'
@@ -18,8 +23,13 @@ services:
     build:
       context: ./webserver
     command: go run ./main
+    # This will make sure this container will wait until postgres
+    # container is up and its healthcheck condition is met
     depends_on:
-      - "postgres"
+      postgres:
+        condition: service_healthy
+    # These volumes are useful since all the changes done in
+    # the source files will be automatically applied to the built containers
     volumes:
       - ./webserver/main:/app/main
       - ./webserver/bin:/app/bin
@@ -27,10 +37,26 @@ services:
     ports:
       - "80:8080"
 
+  # This works, so we have 2 different containers working with
+  # the same code, let's try that when playing with load balancers
+  # webserver2:
+  #   container_name: webserver2
+  #   image: webserver
+  #   build:
+  #     context: ./webserver
+  #   command: go run ./main
+  #   volumes:
+  #     - ./webserver/main:/app/main
+  #     - ./webserver/bin:/app/bin
+  #   ports:
+  #     - "8081:8080"
+
   python_tests:
     container_name: python_tests
     image: python_tests
     build:
       context: ./test
+    # These volumes are useful since all the changes done in
+    # the source files will be automatically applied to the built containers
     volumes:
       - ./test:/app

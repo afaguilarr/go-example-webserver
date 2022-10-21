@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"goWebServer/main/endpoint"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 
@@ -41,7 +41,7 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 		log.Println("Hello world POST called")
 
 		var wo world
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		log.Printf("The request's body is\n%s\n", string(body))
 		if err != nil {
 			endpoint.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
