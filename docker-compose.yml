@@ -22,7 +22,7 @@ services:
     image: webserver
     build:
       context: ./webserver
-    command: go run ./main
+    command: go run ./src
     # This will make sure this container will wait until postgres
     # container is up and its healthcheck condition is met
     depends_on:
@@ -31,7 +31,7 @@ services:
     # These volumes are useful since all the changes done in
     # the source files will be automatically applied to the built containers
     volumes:
-      - ./webserver/main:/app/main
+      - ./webserver/src:/app/src
       - ./webserver/bin:/app/bin
       - ./webserver/db_migrations:/app/db_migrations
     ports:
@@ -44,9 +44,9 @@ services:
   #   image: webserver
   #   build:
   #     context: ./webserver
-  #   command: go run ./main
+  #   command: go run ./src
   #   volumes:
-  #     - ./webserver/main:/app/main
+  #     - ./webserver/src:/app/src
   #     - ./webserver/bin:/app/bin
   #   ports:
   #     - "8081:8080"

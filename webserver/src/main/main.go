@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"goWebServer/main/endpoint"
+	"goWebServer/src/endpoint"
 	"io"
 	"log"
 	"net/http"
