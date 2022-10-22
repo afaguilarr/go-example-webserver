@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"goWebServer/src/endpoint"
+	"goWebServer/src/http_helpers"
 	"io"
 	"log"
 	"net/http"
@@ -44,14 +44,14 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
 		log.Printf("The request's body is\n%s\n", string(body))
 		if err != nil {
-			endpoint.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
+			http_helpers.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
 			return
 		}
 
 		err = json.Unmarshal(body, &wo)
 		log.Printf("The parsed entity is\n%s\n", wo)
 		if err != nil {
-			endpoint.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
+			http_helpers.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
 			return
 		}
 
@@ -78,7 +78,7 @@ func helloGenericName(w http.ResponseWriter, r *http.Request) {
 func helloName(w http.ResponseWriter, r *http.Request, name string) {
 	log.Printf("Hello name called with name %s\n", name)
 	if name == "personaFea" {
-		endpoint.ErrorHandler(w, r, http.StatusNotFound, "Error 404, name personaFea is not available")
+		http_helpers.ErrorHandler(w, r, http.StatusNotFound, "Error 404, name personaFea is not available")
 		return
 	}
 	sqlStatement := `INSERT INTO hello_world (hw_text) VALUES ($1) RETURNING id, hw_text`
@@ -111,10 +111,10 @@ func createDBConnection() *sql.DB {
 func main() {
 	db = createDBConnection()
 	defer db.Close()
-	endpoints := []endpoint.Endpoint{
-		endpoint.BasicEndpoint{Path: "/", Function: helloWorld},
-		endpoint.BasicEndpoint{Path: "/name", Function: helloGenericName},
-		endpoint.EndpointWithPattern{
+	endpoints := []http_helpers.Endpoint{
+		http_helpers.BasicEndpoint{Path: "/", Function: helloWorld},
+		http_helpers.BasicEndpoint{Path: "/name", Function: helloGenericName},
+		http_helpers.EndpointWithPattern{
 			BasePath:        "/name/",
 			Pattern:         "(?P<name>[A-Za-z0-9]+)",
 			BaseFunction:    helloGenericName,
@@ -122,7 +122,7 @@ func main() {
 		},
 	}
 	for _, e := range endpoints {
-		endpoint.Handle(e, http.HandleFunc)
+		http_helpers.Handle(e, http.HandleFunc)
 	}
 	log.Println("Server starting!")
 	err := http.ListenAndServe(":8080", nil)

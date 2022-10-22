@@ -19,6 +19,12 @@ And then just run:
 docker-compose run python_tests pytest
 ```
 
+To run the unit tests:
+```bash
+docker-compose run webserver sh bin/go_test.sh
+```
+This will generate a coverage report at `./webserver/src/report/coverage.html`.
+
 To run pylint use the following command:
 ```bash
 docker-compose run python_tests sh bin/pylint.sh

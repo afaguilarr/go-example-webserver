@@ -22,7 +22,7 @@ services:
     image: webserver
     build:
       context: ./webserver
-    command: go run ./src
+    command: go run ./src/main/
     # This will make sure this container will wait until postgres
     # container is up and its healthcheck condition is met
     depends_on:
