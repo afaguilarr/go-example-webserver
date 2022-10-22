@@ -3,11 +3,11 @@
 This project aims to create an example go/golang web-server.
 Any feedback is welcome since this is a public project.
 
-The project is integrated with docker, then running the following commands after setting up a `.env` file at `go-example-webserver/postgres/.env`, should be enough (there is an example env file in the `go-example-webserver/postgres/` directory):
+The project is integrated with docker, then running the following commands after setting up a `.env` file at `go-example-webserver/.env`, should be enough (there is an example env file in the `go-example-webserver` directory):
 ```bash
 docker-compose build
-docker-compose --env-file ./postgres/.env up
-docker-compose --env-file ./postgres/.env up -d # if you want to run the containers in the background
+docker-compose --env-file ./.env up
+docker-compose --env-file ./.env up -d # if you want to run the containers in the background
 ```
 
 To run the functional tests written in python, we have to set up the DB, in order to do that execute the following goose command:
@@ -53,7 +53,7 @@ To unapply the db_migrations use the following command:
 docker-compose run webserver sh bin/goose_downgrade_migration.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
 ```
 
-To add new go dependencies we just have to use the following commands. This can be done through your local environment as long as you have go installed.
+To add new go dependencies we just have to use the following commands inside the `webserver` directory. This can be done through your local environment as long as you have go installed.
 ```bash
 go get ${DEPENDENCY}@${VERSION}
 go mod tidy

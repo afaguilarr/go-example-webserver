@@ -16,7 +16,7 @@ jobs:
       - run:
           name: "Build Containers"
           command: |
-            cp postgres/.env.ci postgres/.env
+            cp .env.ci .env
             docker-compose build
       - run:
           name: "Go Vet"
