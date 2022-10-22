@@ -45,5 +45,4 @@ func (h *HelloNameHandler) HelloName(w http.ResponseWriter, r *http.Request, nam
 	if err != nil {
 		log.Fatalf("Something went wrong with the 'Hello Name' for name %s: %s", name, err)
 	}
-	return
 }
