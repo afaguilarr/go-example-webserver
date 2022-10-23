@@ -1,4 +1,4 @@
-package endpoint
+package http_helpers
 
 import (
 	"net/http"

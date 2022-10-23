@@ -1,4 +1,4 @@
-package endpoint
+package http_helpers
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ type BasicEndpoint struct {
 }
 
 func (e BasicEndpoint) Handler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != e.Path {
+	if r.URL.Path != e.GetPath() {
 		ErrorHandler(w, r, http.StatusNotFound, "")
 		return
 	}

@@ -16,7 +16,7 @@ jobs:
       - run:
           name: "Build Containers"
           command: |
-            cp postgres/.env.ci postgres/.env
+            cp .env.ci .env
             docker-compose build
       - run:
           name: "Go Vet"
@@ -32,11 +32,9 @@ jobs:
           command: "docker-compose run python_tests sh bin/pylint.sh"
       - run:
           name: "Run unit tests"
-          command: |
-            mkdir webserver/main/report
-            docker-compose run webserver sh bin/go_test.sh
+          command: docker-compose run webserver sh bin/go_test.sh
       - store_artifacts:
-          path: webserver/main/report/coverage.html
+          path: webserver/src/report/coverage.html
           destination: coverage.html
       - run:
           name: "Spin up Containers"

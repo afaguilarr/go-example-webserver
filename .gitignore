@@ -4,4 +4,4 @@
 **/report
 **/.DS_Store
 **/postgres/data
-**/postgres/.env
+**.env

@@ -13,16 +13,19 @@ services:
     volumes:
       - './postgres/data:/var/lib/postgresql/data'
     env_file:
-      - ./postgres/.env
+      - ./.env
     ports:
       - '5432:5432'
 
   webserver:
     container_name: webserver
     image: webserver
+    # This should point to the place where this is defined in the dockerfiles
+    # If this had an independent Dockerfile, we wouldn't need a target
     build:
-      context: ./webserver
-    command: go run ./main
+      context: ./
+      target: go_webserver
+    command: go run ./src/main/
     # This will make sure this container will wait until postgres
     # container is up and its healthcheck condition is met
     depends_on:
@@ -31,9 +34,10 @@ services:
     # These volumes are useful since all the changes done in
     # the source files will be automatically applied to the built containers
     volumes:
-      - ./webserver/main:/app/main
+      - ./webserver/src:/app/src
       - ./webserver/bin:/app/bin
       - ./webserver/db_migrations:/app/db_migrations
+      - ./.env:/app/.env
     ports:
       - "80:8080"
 
@@ -44,9 +48,9 @@ services:
   #   image: webserver
   #   build:
   #     context: ./webserver
-  #   command: go run ./main
+  #   command: go run ./src
   #   volumes:
-  #     - ./webserver/main:/app/main
+  #     - ./webserver/src:/app/src
   #     - ./webserver/bin:/app/bin
   #   ports:
   #     - "8081:8080"
@@ -54,9 +58,13 @@ services:
   python_tests:
     container_name: python_tests
     image: python_tests
+    # This should point to the place where this is defined in the dockerfiles
+    # If this had an independent Dockerfile, we wouldn't need a target
     build:
-      context: ./test
+      context: ./
+      target: python_tests
     # These volumes are useful since all the changes done in
     # the source files will be automatically applied to the built containers
     volumes:
       - ./test:/app
+      - ./.env:/app/.env
