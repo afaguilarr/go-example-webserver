@@ -1,5 +1,7 @@
 # syntax = docker/dockerfile:1.2
 
+# MULTI-STAGE Dockerfile
+
 #
 # go webserver code
 #
@@ -33,3 +35,12 @@ RUN pip3 install -r requirements.txt
 COPY test/ .
 COPY .env .
 
+
+#
+# nginx container
+#
+FROM nginx:1.23 as nginx_custom
+
+# These lines modify the default configuration and html files for nginx
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/html /usr/share/nginx/html

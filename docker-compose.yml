@@ -1,6 +1,7 @@
 version: "3.2"
 
 services:
+
   postgres:
     container_name: postgres
     image: 'postgres:15'
@@ -14,11 +15,12 @@ services:
       - './postgres/data:/var/lib/postgresql/data'
     env_file:
       - ./.env
-    ports:
-      - '5432:5432'
+    # This would let us connect directly without having to connect to the docker container
+    # ports:
+    #   - '5432:5432'
 
   webserver:
-    container_name: webserver
+    # container_name: webserver
     image: webserver
     # This should point to the place where this is defined in the dockerfiles
     # If this had an independent Dockerfile, we wouldn't need a target
@@ -38,22 +40,25 @@ services:
       - ./webserver/bin:/app/bin
       - ./webserver/db_migrations:/app/db_migrations
       - ./.env:/app/.env
-    ports:
-      - "80:8080"
+    deploy:
+      replicas: 2
+    # This would let us send requests directly without having to connect to the docker container
+    # ports:
+    #   - "80:8080"
 
-  # This works, so we have 2 different containers working with
-  # the same code, let's try that when playing with load balancers
-  # webserver2:
-  #   container_name: webserver2
-  #   image: webserver
-  #   build:
-  #     context: ./webserver
-  #   command: go run ./src
-  #   volumes:
-  #     - ./webserver/src:/app/src
-  #     - ./webserver/bin:/app/bin
-  #   ports:
-  #     - "8081:8080"
+  nginx:
+    container_name: nginx
+    image: nginx_custom
+    build:
+      context: ./
+      target: nginx_custom
+    depends_on:
+      - "webserver"
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/html/:/usr/share/nginx/html
 
   python_tests:
     container_name: python_tests
