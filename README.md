@@ -11,7 +11,7 @@ docker-compose --env-file ./.env up
 docker-compose --env-file ./.env up -d # if you want to run the containers in the background
 ```
 
-To run the functional tests written in python, we have to set up the DB, in order to do that execute the following goose command:
+To run the functional tests written in python, or any manual tests, we have to set up the DB, in order to do that execute the following goose command:
 ```bash
 docker-compose run webserver sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
 ```
