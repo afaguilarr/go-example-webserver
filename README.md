@@ -1,6 +1,7 @@
 # README.md
 
 This project aims to create an example go/golang web-server.
+The `go-example-webserver/docs` directory includes the explanation of the application being built (the docs will have a broader scope than the actual code at the point you're reading this probably).
 Any feedback is welcome since this is a public project.
 
 The project is integrated with docker, then running the following commands after setting up a `.env` file at `go-example-webserver/.env`, should be enough (there is an example env file in the `go-example-webserver` directory):
