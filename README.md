@@ -61,4 +61,6 @@ go mod tidy
 ```
 
 ## .github
-This repo uses Dependabot to keep its Go dependencies up to date. The config was created following this blog article: https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/
+This repo uses Dependabot to keep its Go dependencies up to date.
+The config was created following this blog article: https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/
+And the github docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuring-dependabot-version-updates
