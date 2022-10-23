@@ -20,6 +20,9 @@ services:
     #   - '5432:5432'
 
   webserver:
+    # This container name is really useful to identify the service in the docker network,
+    # but in our case, since we are adding replicas for this service, this will make all replicas try
+    # to have the same name, which is breaking the docker-compose up command.
     # container_name: webserver
     image: webserver
     # This should point to the place where this is defined in the dockerfiles
@@ -40,6 +43,8 @@ services:
       - ./webserver/bin:/app/bin
       - ./webserver/db_migrations:/app/db_migrations
       - ./.env:/app/.env
+    # These replicas will allow us to have 2 running containers for this service, this will allow us to test
+    # load balancing behaviors.
     deploy:
       replicas: 2
     # This would let us send requests directly without having to connect to the docker container

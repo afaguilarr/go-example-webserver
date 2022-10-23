@@ -4,3 +4,4 @@ pytest-html-reporter
 pylint
 sqlalchemy
 psycopg2-binary
+python-dotenv
