@@ -76,6 +76,9 @@ go get ${DEPENDENCY}@${VERSION}
 go mod tidy
 ```
 
+## Adding or updating Python dependencies
+So far I've been adding these manually to the `test/requirements.txt` file. After that, we need to re-build the python container.
+
 ## Dependabot
 This repo uses Dependabot to keep its Go dependencies up to date.
 The config was created following this blog article: https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/
