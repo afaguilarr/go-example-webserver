@@ -59,3 +59,6 @@ To add new go dependencies we just have to use the following commands inside the
 go get ${DEPENDENCY}@${VERSION}
 go mod tidy
 ```
+
+## .github
+This repo uses Dependabot to keep its Go dependencies up to date. The config was created following this blog article: https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/
