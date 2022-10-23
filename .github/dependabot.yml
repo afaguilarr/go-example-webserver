@@ -12,3 +12,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    pull-request-branch-name:
+      separator: "_"
+  # Configuration for Python (functional and e2e tests)
+  - package-ecosystem: "pip"
+    directory: "/test"
+    schedule:
+      interval: "weekly"
+    pull-request-branch-name:
+      separator: "_"
