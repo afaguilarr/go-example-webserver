@@ -3,7 +3,7 @@
 ## Pre-requisites
 
 Make sure to check the following before contributing by opening `Issues` or creating a `Pull Request`:
-* [Code of conduct](https://github.com/afaguilarr/go-example-webserver/blob/main/CODE_OF_CONDUCT.md).
+* [Code of conduct](https://github.com/afaguilarr/go-example-webserver/blob/main/.github/CODE_OF_CONDUCT.md).
 * [README file](https://github.com/afaguilarr/go-example-webserver/blob/main/README.md)
 
 ## Issues
