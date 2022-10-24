@@ -1,14 +1,14 @@
 # README.md
 
-## Desription
+## Description
 
 This project aims to create an example go/golang web-server.
 The `go-example-webserver/docs` directory includes the explanation of the application being built (the docs will have a broader scope than the actual code at the point you're reading this probably).
 Any feedback is welcome since this is a public project.
 
-## Building and running project
+## Building and running the project
 
-The project is integrated with docker, then running the following commands after setting up a `.env` file at `go-example-webserver/.env`, should be enough (there is an example env file in the `go-example-webserver` directory):
+The project is integrated with docker, then running the following commands after setting up a `.env` file at `go-example-webserver/.env`, should be enough (there is an example env file in the root directory):
 ```bash
 docker-compose build
 docker-compose --env-file ./.env up
@@ -17,7 +17,7 @@ docker-compose --env-file ./.env up -d # if you want to run the containers in th
 
 ## Functional tests and Manual tests
 
-To run the functional tests written in python, or any manual tests, we have to set up the DB, in order to do that execute the following goose command:
+To run the functional tests written in python, or any manual tests, we have to set up the DB, in order to do that, execute the following goose command:
 ```bash
 docker-compose run webserver sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
 ```
