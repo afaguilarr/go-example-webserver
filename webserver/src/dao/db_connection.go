@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	hostKey     = "POSTGRES_HOST"
-	portKey     = "POSTGRES_PORT"
-	userKey     = "POSTGRES_USER"
-	passwordKey = "POSTGRES_PASSWORD"
-	dbnameKey   = "POSTGRES_DB"
+	hostKey     = "HELLO_WORLD_POSTGRES_HOST"
+	portKey     = "HELLO_WORLD_POSTGRES_PORT"
+	userKey     = "HELLO_WORLD_POSTGRES_USER"
+	passwordKey = "HELLO_WORLD_POSTGRES_PASSWORD"
+	dbnameKey   = "HELLO_WORLD_POSTGRES_DB"
 )
 
 func getPSQLInfo() (string, error) {
