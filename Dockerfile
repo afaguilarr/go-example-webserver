@@ -11,7 +11,7 @@ WORKDIR /app
 
 # Copy all files in this directory to the /app WORKDIR, so that the container has access to all relevant code
 # Leave this at the bottom always, in order to improve docker automatic caching
-COPY webserver/ .
+COPY app/ .
 
 # Run go mod tidy to install all necessary go dependencies in the container
 RUN go mod tidy
