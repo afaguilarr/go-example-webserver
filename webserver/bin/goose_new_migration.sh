@@ -1,2 +1,2 @@
 cd /app/db_migrations
-goose create $1 sql
+go run github.com/pressly/goose/v3/cmd/goose create $1 sql
