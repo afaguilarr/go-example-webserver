@@ -9,7 +9,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready --dbname=${HELLO_WORLD_POSTGRES_DB} --username=${HELLO_WORLD_POSTGRES_USER}"]
       interval: 5s
-      start_period: 1s
+      start_period: 6s
     restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
     volumes:
       - './postgres/hello_world/data:/var/lib/postgresql/data'
@@ -30,7 +30,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready --dbname=${CRYPTO_POSTGRES_DB} --username=${CRYPTO_POSTGRES_USER}"]
       interval: 5s
-      start_period: 1s
+      start_period: 6s
     restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
     volumes:
       - './postgres/crypto/data:/var/lib/postgresql/data'

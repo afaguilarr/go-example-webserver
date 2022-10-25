@@ -24,6 +24,7 @@ COPY .env .
 #
 FROM go_builder as go_webserver
 RUN mkdir db_migrations
+# Set DB migrations for this microservice
 COPY postgres/hello_world/db_migrations ./db_migrations
 
 #
@@ -31,6 +32,7 @@ COPY postgres/hello_world/db_migrations ./db_migrations
 #
 FROM go_builder as go_crypto
 RUN mkdir db_migrations
+# Set DB migrations for this microservice
 COPY postgres/crypto/db_migrations ./db_migrations
 
 
