@@ -9,14 +9,14 @@ FROM golang:1.19 as go_webserver
 
 WORKDIR /app
 
-# Install go staticcheck
-RUN go install honnef.co/go/tools/cmd/staticcheck@latest
-# Install goose for DB migrations
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
-
 # Copy all files in this directory to the /app WORKDIR, so that the container has access to all relevant code
 # Leave this at the bottom always, in order to improve docker automatic caching
 COPY webserver/ .
+
+# Run go mod tidy to install all necessary go dependencies in the container
+RUN go mod tidy
+
+# Copy env so that the environment variables can be processed by the go code
 COPY .env .
 
 
