@@ -1,6 +1,8 @@
-module goWebServer
+module github.com/afaguilarr/go-example-webserver
 
 go 1.19
+
+// replace github.com/afaguilarr/go-example-webserver/proto => ./proto
 
 require github.com/lib/pq v1.10.7
 

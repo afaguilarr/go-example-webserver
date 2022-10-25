@@ -97,6 +97,7 @@ services:
       - ./app/src:/app/src
       - ./app/bin:/app/bin
       - ./postgres/crypto/db_migrations:/app/db_migrations
+      - ./proto/crypto:/app/proto
       - ./.env:/app/.env
     # This would let us send requests directly without having to connect to the docker container
     # ports:

@@ -3,8 +3,8 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"goWebServer/src/dao"
-	"goWebServer/src/http_helpers"
+	"github.com/afaguilarr/go-example-webserver/src/dao"
+	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
 	"log"
 	"net/http"
 )
