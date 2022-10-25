@@ -39,7 +39,7 @@ COPY postgres/crypto/db_migrations ./db_migrations
 #
 # python functional tests container
 #
-FROM python:3.10 as python_tests
+FROM python:3.11.0 as python_tests
 
 WORKDIR /app
 
