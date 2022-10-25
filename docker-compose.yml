@@ -7,14 +7,39 @@ services:
     image: 'postgres:15'
     # If this condition is met, the container will be considered healthy
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready --dbname=${POSTGRES_DB} --username=${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready --dbname=${HELLO_WORLD_POSTGRES_DB} --username=${HELLO_WORLD_POSTGRES_USER}"]
       interval: 5s
       start_period: 1s
     restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
     volumes:
-      - './postgres/data:/var/lib/postgresql/data'
-    env_file:
-      - ./.env
+      - './postgres/hello_world/data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_PASSWORD=${HELLO_WORLD_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${HELLO_WORLD_POSTGRES_USER}
+      - POSTGRES_DB=${HELLO_WORLD_POSTGRES_DB}
+      - POSTGRES_HOST=${HELLO_WORLD_POSTGRES_HOST}
+      - POSTGRES_PORT=${HELLO_WORLD_POSTGRES_PORT}
+    # This would let us connect directly without having to connect to the docker container
+    # ports:
+    #   - '5432:5432'
+
+  postgres_crypto:
+    container_name: postgres_crypto
+    image: 'postgres:15'
+    # If this condition is met, the container will be considered healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname=${CRYPTO_POSTGRES_DB} --username=${CRYPTO_POSTGRES_USER}"]
+      interval: 5s
+      start_period: 1s
+    restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
+    volumes:
+      - './postgres/crypto/data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_PASSWORD=${CRYPTO_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${CRYPTO_POSTGRES_USER}
+      - POSTGRES_DB=${CRYPTO_POSTGRES_DB}
+      - POSTGRES_HOST=${CRYPTO_POSTGRES_HOST}
+      - POSTGRES_PORT=${CRYPTO_POSTGRES_PORT}
     # This would let us connect directly without having to connect to the docker container
     # ports:
     #   - '5432:5432'
@@ -41,12 +66,38 @@ services:
     volumes:
       - ./webserver/src:/app/src
       - ./webserver/bin:/app/bin
-      - ./webserver/db_migrations:/app/db_migrations
+      - ./postgres/hello_world/db_migrations:/app/db_migrations
       - ./.env:/app/.env
     # These replicas will allow us to have 2 running containers for this service, this will allow us to test
     # load balancing behaviors.
     deploy:
       replicas: 2
+    # This would let us send requests directly without having to connect to the docker container
+    # ports:
+    #   - "80:8080"
+
+  crypto:
+    container_name: crypto
+    image: crypto
+    # This should point to the place where this is defined in the dockerfiles
+    # If this had an independent Dockerfile, we wouldn't need a target
+    build:
+      context: ./
+      target: go_crypto
+    # commented for now
+    # command: go run ./src/main/
+    # This will make sure this container will wait until postgres_crypto
+    # container is up and its healthcheck condition is met
+    depends_on:
+      postgres_crypto:
+        condition: service_healthy
+    # These volumes are useful since all the changes done in
+    # the source files will be automatically applied to the built containers
+    volumes:
+      - ./webserver/src:/app/src
+      - ./webserver/bin:/app/bin
+      - ./postgres/crypto/db_migrations:/app/db_migrations
+      - ./.env:/app/.env
     # This would let us send requests directly without having to connect to the docker container
     # ports:
     #   - "80:8080"
