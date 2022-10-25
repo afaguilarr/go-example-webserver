@@ -80,6 +80,8 @@ go get ${DEPENDENCY}@${VERSION}
 go mod tidy
 ```
 
+If you are adding an executable go dependency, add it to the `tools.go` file and follow the instructions there (basically the same instructions above).
+
 ## Adding or updating Python dependencies
 
 So far I've been adding these manually to the `test/requirements.txt` file. After that, we need to re-build the python container.

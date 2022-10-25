@@ -3,6 +3,8 @@
 
 package tools
 
+// This file aims to import all go tools (executable packages, not libraries being used in the code),
+// After adding a dependency here, execute 'go get' for the dependency and also 'go mod tidy'
 import (
 	// Linting dependencies
 	_ "honnef.co/go/tools/cmd/staticcheck"
