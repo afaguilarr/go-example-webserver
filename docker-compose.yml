@@ -44,6 +44,18 @@ services:
     # ports:
     #   - '5432:5432'
 
+# The purpose of this container is just being available to execute go linting and unit testing commands
+  go_builder:
+    container_name: go_builder
+    image: go_builder
+    build:
+      context: ./
+      target: go_builder
+    volumes:
+      - ./app/src:/app/src
+      - ./app/bin:/app/bin
+      - ./.env:/app/.env
+
   webserver:
     # This container name is really useful to identify the service in the docker network,
     # but in our case, since we are adding replicas for this service, this will make all replicas try

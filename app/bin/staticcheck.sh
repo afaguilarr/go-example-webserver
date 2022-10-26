@@ -1,1 +1,3 @@
+cd ./src
 go run honnef.co/go/tools/cmd/staticcheck ./...
+cd ..

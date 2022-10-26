@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/afaguilarr/go-example-webserver/src/dao"
-	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
-	"github.com/afaguilarr/go-example-webserver/src/service"
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/afaguilarr/go-example-webserver/app/src/dao"
+	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
+	"github.com/afaguilarr/go-example-webserver/app/src/service"
+	"github.com/afaguilarr/go-example-webserver/proto"
 
 	_ "github.com/lib/pq"
 )
@@ -64,6 +66,9 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 func main() {
 	db := dao.CreateDBConnection()
 	defer db.Close()
+
+	testProtoPackage := proto.EncryptRequest{}
+	log.Println(testProtoPackage.String())
 
 	hnHandler := service.NewHelloNameHandler(db)
 	endpoints := []http_helpers.Endpoint{

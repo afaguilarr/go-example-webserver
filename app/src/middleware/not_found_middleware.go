@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
 	"net/http"
+
+	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
 )
 
 func NotFoundMiddleWare(next http.Handler, e http_helpers.Endpoint) http.Handler {
