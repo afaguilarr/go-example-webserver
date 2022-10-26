@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"github.com/afaguilarr/go-example-webserver/src/dao"
 	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
 	"github.com/afaguilarr/go-example-webserver/src/service"
-	"io"
-	"log"
-	"net/http"
 
 	_ "github.com/lib/pq"
 )
@@ -67,7 +68,7 @@ func main() {
 	defer db.Close()
 
 	testProtoPackage := proto.EncryptRequest{}
-	log.Println(testProtoPackage)
+	log.Println(testProtoPackage.String())
 
 	hnHandler := service.NewHelloNameHandler(db)
 	endpoints := []http_helpers.Endpoint{
