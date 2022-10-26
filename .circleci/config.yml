@@ -76,19 +76,15 @@ workflows:
   build-and-test-workflow:
     jobs:
       - build
-    jobs:
       - lint:
         requires:
           - build
-    jobs:
       - unit-test:
         requires:
           - build
-    jobs:
       - spin-up:
         requires:
           - build
-    jobs:
       - hello-world-functional-tests:
         requires:
           - spin-up
