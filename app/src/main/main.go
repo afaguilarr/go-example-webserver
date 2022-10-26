@@ -7,10 +7,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/afaguilarr/go-example-webserver/app/src/dao"
+	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
+	"github.com/afaguilarr/go-example-webserver/app/src/service"
 	"github.com/afaguilarr/go-example-webserver/proto"
-	"github.com/afaguilarr/go-example-webserver/src/dao"
-	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
-	"github.com/afaguilarr/go-example-webserver/src/service"
 
 	_ "github.com/lib/pq"
 )

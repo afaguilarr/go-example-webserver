@@ -1,4 +1,4 @@
-module github.com/afaguilarr/go-example-webserver
+module github.com/afaguilarr/go-example-webserver/app
 
 go 1.19
 

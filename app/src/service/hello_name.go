@@ -3,10 +3,11 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"github.com/afaguilarr/go-example-webserver/src/dao"
-	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
 	"log"
 	"net/http"
+
+	"github.com/afaguilarr/go-example-webserver/app/src/dao"
+	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
 )
 
 type HelloNameHandler struct {
