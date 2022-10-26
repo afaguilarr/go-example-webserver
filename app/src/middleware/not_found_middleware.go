@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"goWebServer/src/http_helpers"
+	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
 	"net/http"
 )
 

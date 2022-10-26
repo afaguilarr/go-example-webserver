@@ -2,7 +2,7 @@ version: 2
 updates:
   # Configuration for Go
   - package-ecosystem: "gomod"
-    directory: "/webserver"
+    directory: "/app"
     schedule:
       interval: "daily"
     pull-request-branch-name:

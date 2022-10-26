@@ -32,7 +32,7 @@ To run the unit tests:
 ```bash
 docker-compose run webserver sh bin/go_test.sh
 ```
-This will generate a coverage report at `./webserver/src/report/coverage.html`.
+This will generate a coverage report at `./app/src/report/coverage.html`.
 
 ## Go linting
 
@@ -74,7 +74,7 @@ docker-compose run webserver sh bin/goose_downgrade_migration.sh ${POSTGRES_USER
 
 ## Adding or updating Go dependencies
 
-To add new go dependencies we just have to use the following commands inside the `webserver` directory. This can be done through your local environment as long as you have go installed.
+To add new go dependencies we just have to use the following commands inside the `app` directory. This can be done through your local environment as long as you have go installed.
 ```bash
 go get ${DEPENDENCY}@${VERSION}
 go mod tidy

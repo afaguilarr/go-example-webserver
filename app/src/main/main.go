@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"goWebServer/src/dao"
-	"goWebServer/src/http_helpers"
-	"goWebServer/src/service"
+	"github.com/afaguilarr/go-example-webserver/src/dao"
+	"github.com/afaguilarr/go-example-webserver/src/http_helpers"
+	"github.com/afaguilarr/go-example-webserver/src/service"
 	"io"
 	"log"
 	"net/http"
