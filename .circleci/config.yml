@@ -18,10 +18,51 @@ jobs:
           command: |
             cp .env.ci .env
             docker-compose build
+      # Steps necessary to persist the images between jobs
+      # https://circleci.com/docs/workspaces/
+      # https://support.circleci.com/hc/en-us/articles/360019182513-Build-a-Docker-image-in-one-job-and-use-it-in-another-job
+      - run:
+          name: "Create workspace"
+          command: mkdir -p /workspace
+      - run:
+          name: "Persist go_builder image"
+          command: docker save -o /workspace/go_builder go_builder
+      - run:
+          name: "Persist go_webserver image"
+          command: docker save -o /workspace/go_webserver go_webserver
+      - run:
+          name: "Persist go_crypto image"
+          command: docker save -o /workspace/go_crypto go_crypto
+      - run:
+          name: "Persist python_tests image"
+          command: docker save -o /workspace/python_tests python_tests
+      - run:
+          name: "Persist nginx_custom image"
+          command: docker save -o /workspace/nginx_custom nginx_custom
+      - persist_to_workspace:
+          root: /workspace
+          paths:
+            - go_builder
+            - go_webserver
+            - go_crypto
+            - python_tests
+            - nginx_custom
 
   lint:
     machine: true
     steps:
+      # Steps necessary to persist the images between jobs
+      # https://circleci.com/docs/workspaces/
+      # https://support.circleci.com/hc/en-us/articles/360019182513-Build-a-Docker-image-in-one-job-and-use-it-in-another-job
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: "Load go_builder image"
+          command: "docker load -i /workspace/go_builder"
+      - run:
+          name: "Load python_tests image"
+          command: "docker load -i /workspace/python_tests"
+      - checkout
       - run:
           name: "Go Vet"
           command: "docker-compose run go_builder sh bin/go_vet.sh"
@@ -38,6 +79,12 @@ jobs:
   unit-test:
     machine: true
     steps:
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: "Load go_builder image"
+          command: "docker load -i /workspace/go_builder"
+      - checkout
       - run:
           name: "Run unit tests"
           command: docker-compose run go_builder sh bin/go_test.sh
@@ -45,19 +92,33 @@ jobs:
           path: app/src/report/coverage.html
           destination: coverage.html
 
-  spin-up:
+  functional-tests:
     machine: true
     steps:
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: "Load go_builder image"
+          command: "docker load -i /workspace/go_builder"
+      - run:
+          name: "Load python_tests image"
+          command: "docker load -i /workspace/python_tests"
+      - run:
+          name: "Load go_webserver image"
+          command: "docker load -i /workspace/go_webserver"
+      - run:
+          name: "Load go_crypto image"
+          command: "docker load -i /workspace/go_crypto"
+      - run:
+          name: "Load nginx_custom image"
+          command: "docker load -i /workspace/nginx_custom"
+      - checkout
       - run:
           name: "Spin up Containers"
           command: "docker-compose up -d" # Detached to avoid that this step is run an indefinite amount of time
       - run:
           name: "Set up DB"
           command: "docker-compose run webserver sh bin/goose_apply_migrations.sh admin admin"
-
-  hello-world-functional-tests:
-    machine: true
-    steps:
       - run:
           name: "Run functional tests"
           command: |
@@ -82,9 +143,6 @@ workflows:
       - "unit-test":
           requires:
               - build
-      - "spin-up":
+      - "functional-tests":
           requires:
               - build
-      - "hello-world-functional-tests":
-          requires:
-              - spin-up
