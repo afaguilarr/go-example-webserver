@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package go_webserver.crypto;
+
+option go_package = "github.com/afaguilarr/go-example-webserver/proto";
+
+// Crypto exposes all the necessary RPCs to Encrypt or Decrypt information.
+service Crypto {
+  // Encrypt receives a strings for a context and an unencrypted value, and returns an encrypted value
+  rpc Encrypt (EncryptRequest) returns (EncryptResponse) {}
+  // Decrypt receives a strings for a context and an encrypted value, and returns a dencrypted value
+  rpc Decrypt (DecryptRequest) returns (DecryptResponse) {}
+}
+
+// The EncryptRequest message contains strings for a context and an unencrypted value.
+message EncryptRequest {
+  string context = 1;
+  string unencrypted_value = 2;
+}
+
+// The EncryptResponse message contains strings for an encrypted value.
+message EncryptResponse {
+  string encrypted_value = 1;
+}
+
+// The DecryptRequest message contains strings for a context and an encrypted value.
+message DecryptRequest {
+  string context = 1;
+  string encrypted_value = 2;
+}
+
+// The DecryptResponse message contains strings for a decrypted value.
+message DecryptResponse {
+  string decrypted_value = 1;
+}
