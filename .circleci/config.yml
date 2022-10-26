@@ -23,24 +23,24 @@ jobs:
       # https://support.circleci.com/hc/en-us/articles/360019182513-Build-a-Docker-image-in-one-job-and-use-it-in-another-job
       - run:
           name: "Create workspace"
-          command: mkdir -p /workspace
+          command: mkdir -p workspace
       - run:
           name: "Persist go_builder image"
-          command: docker save -o /workspace/go_builder go_builder
+          command: docker save -o workspace/go_builder go_builder
       - run:
           name: "Persist go_webserver image"
-          command: docker save -o /workspace/go_webserver go_webserver
+          command: docker save -o workspace/go_webserver go_webserver
       - run:
           name: "Persist go_crypto image"
-          command: docker save -o /workspace/go_crypto go_crypto
+          command: docker save -o workspace/go_crypto go_crypto
       - run:
           name: "Persist python_tests image"
-          command: docker save -o /workspace/python_tests python_tests
+          command: docker save -o workspace/python_tests python_tests
       - run:
           name: "Persist nginx_custom image"
-          command: docker save -o /workspace/nginx_custom nginx_custom
+          command: docker save -o workspace/nginx_custom nginx_custom
       - persist_to_workspace:
-          root: /workspace
+          root: workspace
           paths:
             - go_builder
             - go_webserver
@@ -55,13 +55,13 @@ jobs:
       # https://circleci.com/docs/workspaces/
       # https://support.circleci.com/hc/en-us/articles/360019182513-Build-a-Docker-image-in-one-job-and-use-it-in-another-job
       - attach_workspace:
-          at: /workspace
+          at: workspace
       - run:
           name: "Load go_builder image"
-          command: "docker load -i /workspace/go_builder"
+          command: "docker load -i workspace/go_builder"
       - run:
           name: "Load python_tests image"
-          command: "docker load -i /workspace/python_tests"
+          command: "docker load -i workspace/python_tests"
       - checkout
       - run:
           name: "Go Vet"
@@ -80,10 +80,10 @@ jobs:
     machine: true
     steps:
       - attach_workspace:
-          at: /workspace
+          at: workspace
       - run:
           name: "Load go_builder image"
-          command: "docker load -i /workspace/go_builder"
+          command: "docker load -i workspace/go_builder"
       - checkout
       - run:
           name: "Run unit tests"
@@ -96,22 +96,22 @@ jobs:
     machine: true
     steps:
       - attach_workspace:
-          at: /workspace
+          at: workspace
       - run:
           name: "Load go_builder image"
-          command: "docker load -i /workspace/go_builder"
+          command: "docker load -i workspace/go_builder"
       - run:
           name: "Load python_tests image"
-          command: "docker load -i /workspace/python_tests"
+          command: "docker load -i workspace/python_tests"
       - run:
           name: "Load go_webserver image"
-          command: "docker load -i /workspace/go_webserver"
+          command: "docker load -i workspace/go_webserver"
       - run:
           name: "Load go_crypto image"
-          command: "docker load -i /workspace/go_crypto"
+          command: "docker load -i workspace/go_crypto"
       - run:
           name: "Load nginx_custom image"
-          command: "docker load -i /workspace/nginx_custom"
+          command: "docker load -i workspace/nginx_custom"
       - checkout
       - run:
           name: "Spin up Containers"
