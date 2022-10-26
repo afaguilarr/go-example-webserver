@@ -28,11 +28,11 @@ jobs:
           name: "Persist go_builder image"
           command: docker save -o workspace/go_builder go_builder
       - run:
-          name: "Persist go_webserver image"
-          command: docker save -o workspace/go_webserver go_webserver
+          name: "Persist webserver image"
+          command: docker save -o workspace/webserver webserver
       - run:
-          name: "Persist go_crypto image"
-          command: docker save -o workspace/go_crypto go_crypto
+          name: "Persist crypto image"
+          command: docker save -o workspace/crypto crypto
       - run:
           name: "Persist python_tests image"
           command: docker save -o workspace/python_tests python_tests
