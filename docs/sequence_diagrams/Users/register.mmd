@@ -9,6 +9,11 @@ sequenceDiagram
     RESTful API->>+Users microservice: Users/Register RPC
     Users microservice->>+Users microservice: Checks correctness of data
     Users microservice->>+Crypto microservice: Crypto/Encrypt RPC (Password)
+    Crypto microservice->>+Crypto microservice: Gets secret from env
+    Crypto microservice->>+Crypto microservice: Generates salts for record
+    Crypto microservice->>+Crypto microservice: Encrypts password
+    Crypto microservice->>+Crypto postgres: Stores salts for password
+    Crypto postgres-->>-Crypto microservice: Returns success
     Crypto microservice-->>-Users microservice: Encrypted password
     Users microservice->>+Users Postgres: Stores user data
     Users Postgres-->>-Users microservice: Returns stored data

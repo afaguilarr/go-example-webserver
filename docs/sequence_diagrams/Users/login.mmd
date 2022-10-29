@@ -9,6 +9,10 @@ sequenceDiagram
     RESTful API->>+Users microservice: Users/LogIn RPC
     Users microservice->>+Users microservice: Checks existance of user
     Users microservice->>+Crypto microservice: Crypto/Decrypt RPC (Password)
+    Crypto microservice->>+Crypto microservice: Gets secret from env
+    Crypto microservice->>+Crypto postgres: Gets salts for password
+    Crypto postgres-->>-Crypto microservice: Returns salts for password
+    Crypto microservice->>+Crypto microservice: Decrypts Password
     Crypto microservice-->>-Users microservice: Decrypted password
     Users microservice->>+Users microservice: Checks correctness of password
     Users microservice->>+Users microservice: Generates user token
