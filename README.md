@@ -30,7 +30,7 @@ docker-compose run python_tests pytest
 
 To run the unit tests:
 ```bash
-docker-compose run webserver sh bin/go_test.sh
+docker-compose run go_builder sh bin/go_test.sh
 ```
 This will generate a coverage report at `./app/src/report/coverage.html`.
 
@@ -38,9 +38,9 @@ This will generate a coverage report at `./app/src/report/coverage.html`.
 
 We have some different commands to run Go linters, run the following commands:
 ```bash
-docker-compose run webserver sh bin/go_fmt.sh
-docker-compose run webserver sh bin/go_vet.sh
-docker-compose run webserver sh bin/staticcheck.sh
+docker-compose run go_builder sh bin/go_fmt.sh
+docker-compose run go_builder sh bin/go_vet.sh
+docker-compose run go_builder sh bin/staticcheck.sh
 ```
 
 ## Python linting
@@ -52,24 +52,24 @@ docker-compose run python_tests sh bin/pylint.sh
 
 ## Goose and PostgreSQL DB Info
 
-To connect to the DataBase, use the following command:
+To connect to the DataBase, use the following command (replace ${MICROSERVICE} by the affected microservice):
 ```bash
-docker-compose run postgres psql --host=postgres --username=${POSTGRES_USERNAME} --dbname=hello_world
+docker-compose run postgres_${MICROSERVICE} psql --host=postgres --username=${POSTGRES_USERNAME} --dbname=hello_world
 ```
 
 To create a new DB migration use the following command:
 ```bash
-docker-compose run webserver sh bin/goose_new_migration.sh ${MIGRATION_NAME}
+docker-compose run ${MICROSERVICE} sh bin/goose_new_migration.sh ${MIGRATION_NAME}
 ```
 
 To apply the db_migrations use the following command:
 ```bash
-docker-compose run webserver sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+docker-compose run ${MICROSERVICE} sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
 ```
 
 To unapply the db_migrations use the following command:
 ```bash
-docker-compose run webserver sh bin/goose_downgrade_migration.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+docker-compose run ${MICROSERVICE} sh bin/goose_downgrade_migration.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
 ```
 
 ## Adding or updating Go dependencies
@@ -85,6 +85,20 @@ If you are adding an executable go dependency, add it to the `tools.go` file and
 ## Adding or updating Python dependencies
 
 So far I've been adding these manually to the `test/requirements.txt` file. After that, we need to re-build the python container.
+
+## Updating Protos
+
+Update the `app/bin/generate_protos` and then build the project by executing the `docker-compose build` command or execute the following command:
+```bash
+docker-compose run go_builder sh bin/generate_protos.sh
+```
+
+## Call gRPC endpoints manually
+
+Execute the following command:
+```bash
+docker-compose run go_builder grpcurl -plaintext -d '${REQUEST_BODY}' ${MICROSERVICE}:8080 go_webserver.${MICROSERVICE}.${SERVICE}/${RPC}
+```
 
 ## Changes and Pull Requests
 

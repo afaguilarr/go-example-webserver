@@ -45,6 +45,6 @@ func CreateDBConnection() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("The connection to the DB was successful!")
+	log.Println("The connection to the Hello World DB was successful!")
 	return db
 }
