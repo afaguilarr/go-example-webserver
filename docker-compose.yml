@@ -67,7 +67,7 @@ services:
     build:
       context: ./
       target: go_webserver
-    command: go run ./src/main/
+    command: go run ./src/cmd/webserver/main.go
     # This will make sure this container will wait until postgres
     # container is up and its healthcheck condition is met
     depends_on:
@@ -96,8 +96,7 @@ services:
     build:
       context: ./
       target: go_crypto
-    # commented for now
-    # command: go run ./src/main/
+    command: go run ./src/cmd/crypto/main.go
     # This will make sure this container will wait until postgres_crypto
     # container is up and its healthcheck condition is met
     depends_on:

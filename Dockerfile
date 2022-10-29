@@ -9,6 +9,9 @@ FROM golang:1.19 as go_builder
 
 WORKDIR /app
 
+# Install grpcurl
+RUN go install github.com/fullstorydev/grpcurl/cmd/grpcurl@v1.8.7
+
 # Install protobuf tools, including protoc (necessary to compile protos)
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive \
@@ -23,6 +26,11 @@ RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 RUN mkdir proto
 # Move proto files to proto folder
 COPY proto ./proto
+
+# Generate proto files
+RUN mkdir bin
+COPY app/bin bin
+RUN sh ./bin/generate_protos.sh
 
 # Copy all files in this directory to the /app WORKDIR, so that the container has access to all relevant code
 # Leave this at the bottom always, in order to improve docker automatic caching

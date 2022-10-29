@@ -6,11 +6,11 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
 	"github.com/afaguilarr/go-example-webserver/app/src/service"
-	"github.com/afaguilarr/go-example-webserver/proto"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -68,19 +68,23 @@ func main() {
 	db := dao.CreateDBConnection()
 	defer db.Close()
 
-	testProtoPackage := proto.EncryptRequest{}
-	log.Println(testProtoPackage.String())
+	hnHandler := service.NewHelloNameHandler(db)
 
 	r := mux.NewRouter()
-
-	hnHandler := service.NewHelloNameHandler(db)
 	r.HandleFunc("/", helloWorld)
 	r.HandleFunc("/name", hnHandler.HelloGenericName)
 	r.HandleFunc("/name/{name}", hnHandler.HelloName)
-	http.Handle("/", r)
 
+	srv := &http.Server{
+		Addr: "0.0.0.0:8080",
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler:      r, // Pass our instance of gorilla/mux in.
+	}
 	log.Println("Server starting!")
-	err := http.ListenAndServe(":8080", nil)
+	err := srv.ListenAndServe()
 	if err != nil {
 		log.Fatalf("Something went wrong with the webserver: %s", err)
 	}
