@@ -1,0 +1,25 @@
+sequenceDiagram
+    Unauthenticated User->>+UI: Goes to https://domain.com
+    UI-->>-Unauthenticated User: Shows main page
+    Unauthenticated User->>+UI: Presses log in
+    UI-->>-Unauthenticated User: Shows login form
+    Unauthenticated User->>+UI: Submits form
+    UI->>+NGINX: https://www.domain.com/api/login
+    NGINX->>+RESTful API: http://www.BEDomain.com/login
+    RESTful API->>+Users microservice: Users/LogIn RPC
+    Users microservice->>+Users microservice: Checks existance of user
+    Users microservice->>+Crypto microservice: Crypto/Decrypt RPC (Password)
+    Crypto microservice->>+Crypto microservice: Gets secret from env
+    Crypto microservice->>+Crypto postgres: Gets salts for password
+    Crypto postgres-->>-Crypto microservice: Returns salts for password
+    Crypto microservice->>+Crypto microservice: Decrypts Password
+    Crypto microservice-->>-Users microservice: Decrypted password
+    Users microservice->>+Users microservice: Checks correctness of password
+    Users microservice->>+Users microservice: Generates user token
+    Users microservice->>+Users Redis: Stores user token (with TTL)
+    Users Redis-->>-Users microservice: Returns stored token
+    Users microservice-->>-RESTful API: Returns stored token
+    RESTful API-->>-NGINX: Returns response
+    NGINX-->>-UI: Returns response
+    UI-->>-Unauthenticated User: Redirects to the welcome page
+    Unauthenticated User->>+Unauthenticated User: Now they're authenticated

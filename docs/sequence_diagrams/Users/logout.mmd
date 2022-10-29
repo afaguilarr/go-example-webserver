@@ -1,0 +1,11 @@
+sequenceDiagram
+    Authenticated User->>+UI: Clicks log out
+    UI->>+NGINX: https://www.domain.com/api/logout
+    NGINX->>+RESTful API: http://www.BEDomain.com/logout
+    RESTful API->>+Users microservice: Users/LogOut RPC
+    Users microservice->>+Users Redis: Delete user token
+    Users Redis-->>-Users microservice: Returns success
+    Users microservice-->>-RESTful API: Returns success
+    RESTful API-->>-NGINX: Returns response
+    NGINX-->>-UI: Returns response
+    UI-->>-Authenticated User: Goes back to the main page
