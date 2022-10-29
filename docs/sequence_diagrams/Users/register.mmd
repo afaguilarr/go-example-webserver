@@ -1,0 +1,18 @@
+sequenceDiagram
+    Unauthenticated User->>+UI: Goes to https://domain.com
+    UI-->>-Unauthenticated User: Shows main page
+    Unauthenticated User->>+UI: Presses register
+    UI-->>-Unauthenticated User: Shows register form
+    Unauthenticated User->>+UI: Submits form
+    UI->>+NGINX: https://www.domain.com/api/register
+    NGINX->>+RESTful API: http://www.BEDomain.com/register
+    RESTful API->>+Users microservice: Users/Register RPC
+    Users microservice->>+Users microservice: Checks correctness of data
+    Users microservice->>+Crypto microservice: Crypto/Encrypt RPC (Password)
+    Crypto microservice-->>-Users microservice: Encrypted password
+    Users microservice->>+Users Postgres: Stores user data
+    Users Postgres-->>-Users microservice: Returns stored data
+    Users microservice-->>-RESTful API: Returns stored User
+    RESTful API-->>-NGINX: Returns response
+    NGINX-->>-UI: Returns response
+    UI-->>-Unauthenticated User: Shows success message

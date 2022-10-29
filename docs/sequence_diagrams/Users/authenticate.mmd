@@ -1,0 +1,14 @@
+sequenceDiagram
+    Authenticated User->>+UI: Goes to some https://domain.com page
+    UI->>+NGINX: https://www.domain.com/api/something
+    NGINX->>+RESTful API: http://www.BEDomain.com/something
+    RESTful API->>+RESTful API: Authentication Middleware
+    RESTful API->>+Users microservice: Users/Authenticate RPC
+    Users microservice->>+Users Redis: Gets user token
+    Users Redis-->>-Users microservice: Returns stored token
+    Users microservice->>+Users microservice: Checks correctness of token
+    Users microservice-->>-RESTful API: Returns stored token
+    RESTful API->>+RESTful API: Continues with the rest of the execution
+    RESTful API-->>-NGINX: Returns response
+    NGINX-->>-UI: Returns response
+    UI-->>-Authenticated User: Executes expected action
