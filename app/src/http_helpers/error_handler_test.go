@@ -6,6 +6,24 @@ import (
 	"testing"
 )
 
+type FakeResponseWriter struct {
+	StatusCode int
+	Content    string
+}
+
+func (frw *FakeResponseWriter) Header() http.Header {
+	return http.Header{}
+}
+
+func (frw *FakeResponseWriter) Write(ba []byte) (int, error) {
+	frw.Content = string(ba)
+	return len(ba), nil
+}
+
+func (frw *FakeResponseWriter) WriteHeader(statusCode int) {
+	frw.StatusCode = statusCode
+}
+
 func TestErrorHandlerCallableWithNoMessageAndNotFoundStatus(t *testing.T) {
 	rWrong := httptest.NewRequest("", "holi://holi.holi", nil)
 	w := &FakeResponseWriter{}
