@@ -20,6 +20,7 @@ type cryptoServer struct {
 
 // Encrypt encrypts a password by using a context string
 func (cs *cryptoServer) Encrypt(ctx context.Context, in *proto.EncryptRequest) (*proto.EncryptResponse, error) {
+	log.Println("Encrypt RPC was called!")
 	return &proto.EncryptResponse{EncryptedValue: "jiji"}, nil
 }
 

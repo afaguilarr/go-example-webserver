@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +12,9 @@ import (
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
 	"github.com/afaguilarr/go-example-webserver/app/src/service"
+	"github.com/afaguilarr/go-example-webserver/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -64,6 +68,34 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func testRPC(w http.ResponseWriter, r *http.Request) {
+	log.Println("Test RPC called")
+	switch r.Method {
+	case http.MethodGet:
+		addr := "crypto:8080"
+		// Set up a connection to the server.
+		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("did not connect: %v", err)
+		}
+		defer conn.Close()
+		c := proto.NewCryptoClient(conn)
+		// Contact the server and print out its response.
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		resp, err := c.Encrypt(ctx, &proto.EncryptRequest{})
+		if err != nil {
+			log.Fatalf("could not greet: %v", err)
+		}
+		_, err = fmt.Fprintf(w, "Greeting: %s", resp.GetEncryptedValue())
+		if err != nil {
+			log.Fatalf("Something went wrong with the 'gRPC test endpoint': %s", err)
+		}
+	default:
+		log.Fatalf("Unsupported Method %s", r.Method)
+	}
+}
+
 func main() {
 	db := dao.CreateDBConnection()
 	defer db.Close()
@@ -74,6 +106,7 @@ func main() {
 	r.HandleFunc("/", helloWorld)
 	r.HandleFunc("/name", hnHandler.HelloGenericName)
 	r.HandleFunc("/name/{name}", hnHandler.HelloName)
+	r.HandleFunc("/test/rpc", testRPC)
 
 	srv := &http.Server{
 		Addr: "0.0.0.0:8080",
