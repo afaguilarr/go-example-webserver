@@ -12,6 +12,7 @@ import (
 	"github.com/afaguilarr/go-example-webserver/app/src/service"
 	"github.com/afaguilarr/go-example-webserver/proto"
 
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
 
@@ -70,20 +71,14 @@ func main() {
 	testProtoPackage := proto.EncryptRequest{}
 	log.Println(testProtoPackage.String())
 
+	r := mux.NewRouter()
+
 	hnHandler := service.NewHelloNameHandler(db)
-	endpoints := []http_helpers.Endpoint{
-		http_helpers.BasicEndpoint{Path: "/", Function: helloWorld},
-		http_helpers.BasicEndpoint{Path: "/name", Function: hnHandler.HelloGenericName},
-		http_helpers.EndpointWithPattern{
-			BasePath:        "/name/",
-			Pattern:         "(?P<name>[A-Za-z0-9]+)",
-			BaseFunction:    hnHandler.HelloGenericName,
-			PatternFunction: hnHandler.HelloName,
-		},
-	}
-	for _, e := range endpoints {
-		http_helpers.Handle(e, http.HandleFunc)
-	}
+	r.HandleFunc("/", helloWorld)
+	r.HandleFunc("/name", hnHandler.HelloGenericName)
+	r.HandleFunc("/name/{name}", hnHandler.HelloName)
+	http.Handle("/", r)
+
 	log.Println("Server starting!")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

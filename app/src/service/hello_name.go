@@ -8,6 +8,7 @@ import (
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
+	"github.com/gorilla/mux"
 )
 
 type HelloNameHandler struct {
@@ -25,10 +26,14 @@ func NewHelloNameHandler(db *sql.DB) HelloNameHandler {
 
 func (h *HelloNameHandler) HelloGenericName(w http.ResponseWriter, r *http.Request) {
 	log.Println("Hello generic name called")
-	h.HelloName(w, r, "Name")
+	vars := map[string]string{}
+	r = mux.SetURLVars(r, vars)
+	h.HelloName(w, r)
 }
 
-func (h *HelloNameHandler) HelloName(w http.ResponseWriter, r *http.Request, name string) {
+func (h *HelloNameHandler) HelloName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
 	log.Printf("Hello name called with name %s\n", name)
 	if name == "personaFea" {
 		http_helpers.ErrorHandler(w, r, http.StatusNotFound, "Error 404, name personaFea is not available")
