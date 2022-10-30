@@ -11,8 +11,9 @@ import (
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
-	"github.com/afaguilarr/go-example-webserver/app/src/service"
+	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -83,7 +84,10 @@ func testRPC(w http.ResponseWriter, r *http.Request) {
 		// Contact the server and print out its response.
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		resp, err := c.Encrypt(ctx, &proto.EncryptRequest{})
+		resp, err := c.Encrypt(ctx, &proto.EncryptRequest{
+			Context:          "jiji",
+			UnencryptedValue: "jojo",
+		})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
@@ -97,10 +101,15 @@ func testRPC(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Fatalf("there was an error loading the env variables: %s", err.Error())
+	}
+
 	db := dao.CreateDBConnection()
 	defer db.Close()
 
-	hnHandler := service.NewHelloNameHandler(db)
+	hnHandler := services.NewHelloNameHandler(db)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", helloWorld)
@@ -117,7 +126,7 @@ func main() {
 		Handler:      r, // Pass our instance of gorilla/mux in.
 	}
 	log.Println("Server starting!")
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatalf("Something went wrong with the webserver: %s", err)
 	}

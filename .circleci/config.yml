@@ -40,8 +40,11 @@ jobs:
           name: "Spin up Containers"
           command: "docker-compose up -d" # Detached to avoid that this step is run an indefinite amount of time
       - run:
-          name: "Set up DB"
-          command: "docker-compose run webserver sh bin/goose_apply_migrations.sh admin admin"
+          name: "Set up hello_world DB"
+          command: "docker-compose run webserver sh bin/goose_apply_migrations.sh postgres admin admin hello_world"
+      - run:
+          name: "Set up crypto DB"
+          command: "docker-compose run crypto sh bin/goose_apply_migrations.sh postgres_crypto admin admin crypto"
       - run:
           name: "Run functional tests"
           command: |
