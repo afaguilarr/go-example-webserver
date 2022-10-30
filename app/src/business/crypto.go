@@ -8,8 +8,8 @@ import (
 )
 
 type BusinessCryptoHandler interface {
-	Encrypt(ctx context.Context, req proto.EncryptRequest) (proto.EncryptResponse, error)
-	Decrypt(ctx context.Context, req proto.DecryptRequest) (proto.DecryptResponse, error)
+	Encrypt(ctx context.Context, req *proto.EncryptRequest) (*proto.EncryptResponse, error)
+	Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error)
 }
 
 type BusinessCrypto struct {
@@ -22,10 +22,10 @@ func NewBusinessCrypto(daoSalts dao.DaoSaltsHandler) *BusinessCrypto {
 	}
 }
 
-func (bc *BusinessCrypto) Encrypt(ctx context.Context, req proto.EncryptRequest) (proto.EncryptResponse, error) {
-	return proto.EncryptResponse{}, nil
+func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest) (*proto.EncryptResponse, error) {
+	return &proto.EncryptResponse{}, nil
 }
 
-func (bc *BusinessCrypto) Decrypt(ctx context.Context, req proto.DecryptRequest) (proto.DecryptResponse, error) {
-	return proto.DecryptResponse{}, nil
+func (bc *BusinessCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error) {
+	return &proto.DecryptResponse{}, nil
 }
