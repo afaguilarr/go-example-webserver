@@ -1,2 +1,2 @@
 cd /app/db_migrations
-go run github.com/pressly/goose/v3/cmd/goose postgres "host=postgres user=$1 password=$2 dbname=hello_world sslmode=disable" up
+go run github.com/pressly/goose/v3/cmd/goose postgres "host=$1 user=$2 password=$3 dbname=$4 sslmode=disable" up

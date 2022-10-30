@@ -11,7 +11,7 @@ import (
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
-	"github.com/afaguilarr/go-example-webserver/app/src/service"
+	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -100,7 +100,7 @@ func main() {
 	db := dao.CreateDBConnection()
 	defer db.Close()
 
-	hnHandler := service.NewHelloNameHandler(db)
+	hnHandler := services.NewHelloNameHandler(db)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", helloWorld)

@@ -64,12 +64,12 @@ docker-compose run ${MICROSERVICE} sh bin/goose_new_migration.sh ${MIGRATION_NAM
 
 To apply the db_migrations use the following command:
 ```bash
-docker-compose run ${MICROSERVICE} sh bin/goose_apply_migrations.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+docker-compose run ${MICROSERVICE} sh bin/goose_apply_migrations.sh ${POSTGRES_CONTAINER} ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD} ${POSTGRES_DB_NAME}
 ```
 
 To unapply the db_migrations use the following command:
 ```bash
-docker-compose run ${MICROSERVICE} sh bin/goose_downgrade_migration.sh ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD}
+docker-compose run ${MICROSERVICE} sh bin/goose_downgrade_migration.sh ${POSTGRES_CONTAINER} ${POSTGRES_USERNAME} ${POSTGRES_PASSWORD} ${POSTGRES_DB_NAME}
 ```
 
 ## Adding or updating Go dependencies
