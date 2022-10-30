@@ -21,7 +21,7 @@ func NewDaoEncryptionData(db *sql.DB) *DaoEncryptionData {
 
 // Just as a note, Upsert queries (ON CONFLICT DO UPDATE SET) can't have
 // the table as UPDATE table SET nor WHERE statements. The rows are already identified
-const UpsertSalts = `
+const UpsertEncryptionDataQuery = `
 INSERT INTO encryption_data (context, crypto_secret, iv, salts)
   VALUES ($1, $2, $3, $4)
 ON CONFLICT (context)
@@ -38,7 +38,7 @@ func (d *DaoEncryptionData) UpsertEncryptionData(ctx context.Context, s *dao.Enc
 	}
 
 	// Scans should reference not-nil pointers
-	err := d.DB.QueryRowContext(ctx, UpsertSalts, *s.Context, s.CryptoSecret, s.IV, s.Salts).
+	err := d.DB.QueryRowContext(ctx, UpsertEncryptionDataQuery, *s.Context, s.CryptoSecret, s.IV, s.Salts).
 		Scan(
 			&id,
 			&s.Context,
@@ -54,7 +54,7 @@ func (d *DaoEncryptionData) UpsertEncryptionData(ctx context.Context, s *dao.Enc
 	return nil
 }
 
-const GetEncryptionDataByContext = `
+const GetEncryptionDataByContextQuery = `
 SELECT
   id,
   context,
@@ -72,7 +72,7 @@ func (d *DaoEncryptionData) GetEncryptionData(ctx context.Context, s *dao.Encryp
 		return errors.New("Nil or empty value detected")
 	}
 
-	err := d.DB.QueryRowContext(ctx, GetEncryptionDataByContext, *s.Context).
+	err := d.DB.QueryRowContext(ctx, GetEncryptionDataByContextQuery, *s.Context).
 		Scan(
 			&id,
 			&s.Context,
