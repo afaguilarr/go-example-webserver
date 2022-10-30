@@ -9,6 +9,7 @@ import (
 	"github.com/afaguilarr/go-example-webserver/app/src/dao/postgres"
 	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -16,6 +17,11 @@ import (
 )
 
 func main() {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Fatalf("there was an error loading the env variables: %s", err.Error())
+	}
+
 	cryptoDB := dao.CreateCryptoDBConnection()
 	defer cryptoDB.Close()
 

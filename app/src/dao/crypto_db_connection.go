@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -19,10 +16,6 @@ const (
 )
 
 func getCryptoPSQLInfo() (string, error) {
-	err := godotenv.Load("./.env")
-	if err != nil {
-		return "", errors.Wrap(err, "there was an error loading the env variables")
-	}
 	host := os.Getenv(cryptoHostKey)
 	port := os.Getenv(cryptoPortKey)
 	user := os.Getenv(cryptoUserKey)

@@ -3,7 +3,7 @@
 CREATE TABLE salts (
     id         SERIAL PRIMARY KEY,
     context    text NOT NULL,
-    salts      text NOT NULL,
+    salts      BYTEA NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT (now() AT TIME ZONE 'utc'),
     updated_at TIMESTAMP NOT NULL DEFAULT (now() AT TIME ZONE 'utc')
 );
