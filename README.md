@@ -54,7 +54,7 @@ docker-compose run python_tests sh bin/pylint.sh
 
 To connect to the DataBase, use the following command (replace ${MICROSERVICE} by the affected microservice):
 ```bash
-docker-compose run postgres_${MICROSERVICE} psql --host=postgres --username=${POSTGRES_USERNAME} --dbname=hello_world
+docker-compose run postgres_${MICROSERVICE} psql --host=postgres_${MICROSERVICE} --username=${POSTGRES_USERNAME} --dbname=${POSTGRES_DB_NAME}
 ```
 
 To create a new DB migration use the following command:

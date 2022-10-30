@@ -5,8 +5,10 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"database/sql"
 	"encoding/base64"
 	"io"
+	"strings"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/proto"
@@ -25,12 +27,12 @@ type BusinessCryptoHandler interface {
 }
 
 type BusinessCrypto struct {
-	DaoSalts dao.DaoSaltsHandler
+	DaoEncryption dao.DaoEncryptionHandler
 }
 
-func NewBusinessCrypto(daoSalts dao.DaoSaltsHandler) *BusinessCrypto {
+func NewBusinessCrypto(daoSalts dao.DaoEncryptionHandler) *BusinessCrypto {
 	return &BusinessCrypto{
-		DaoSalts: daoSalts,
+		DaoEncryption: daoSalts,
 	}
 }
 
@@ -63,9 +65,22 @@ func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 	cfb.XORKeyStream(cipherText, saltedValue)
 
 	encryptedValue := base64.StdEncoding.EncodeToString(cipherText)
-	return &proto.EncryptResponse{
+	resp := &proto.EncryptResponse{
 		EncryptedValue: encryptedValue,
-	}, nil
+	}
+
+	ed := &dao.EncryptionData{
+		Context:      &req.Context,
+		CryptoSecret: secret,
+		IV:           iv,
+		Salts:        salts,
+	}
+	err = bc.DaoEncryption.UpsertEncryptionData(ctx, ed)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "while storing the encryption data: %s", err.Error())
+	}
+
+	return resp, nil
 }
 
 // generateRandomBytes generates a random bytes slice of the given length
@@ -84,5 +99,37 @@ func getSaltedValue(plainText, salts []byte) []byte {
 }
 
 func (bc *BusinessCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error) {
-	return &proto.DecryptResponse{}, nil
+	ed := &dao.EncryptionData{
+		Context: &req.Context,
+	}
+	err := bc.DaoEncryption.GetEncryptionData(ctx, ed)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, status.Error(codes.NotFound, "encryption_data not found")
+		}
+		return nil, status.Errorf(codes.Internal, "while storing the encryption data: %s", err.Error())
+	}
+
+	block, err := aes.NewCipher(ed.CryptoSecret)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "while generating cipher: %s", err.Error())
+	}
+	cfb := cipher.NewCFBDecrypter(block, ed.IV)
+
+	cipherText, err := base64.StdEncoding.DecodeString(req.EncryptedValue)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "while generating cipherText: %s", err.Error())
+	}
+
+	saltedValue := make([]byte, len(cipherText))
+	cfb.XORKeyStream(saltedValue, cipherText)
+	decryptedValue := string(saltedValue[0:(len(saltedValue) - PW_SALT_BYTES)])
+
+	// For some reason, the decrypted value included an indefinite number of \u0000 characters
+	// at the beginning of the string. Trimming those looks like it fixes the issue.
+	decryptedValue = strings.Trim(decryptedValue, "\u0000")
+	resp := &proto.DecryptResponse{
+		DecryptedValue: decryptedValue,
+	}
+	return resp, nil
 }

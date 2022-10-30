@@ -9,90 +9,82 @@ import (
 	"github.com/pkg/errors"
 )
 
-type DaoSalts struct {
+type DaoEncryptionData struct {
 	DB *sql.DB
 }
 
-func NewDaoSalts(db *sql.DB) *DaoSalts {
-	return &DaoSalts{
+func NewDaoEncryptionData(db *sql.DB) *DaoEncryptionData {
+	return &DaoEncryptionData{
 		DB: db,
 	}
 }
 
+// Just as a note, Upsert queries (ON CONFLICT DO UPDATE SET) can't have
+// the table as UPDATE table SET nor WHERE statements. The rows are already identified
 const UpsertSalts = `
-INSERT INTO salts (context, salts)
-  VALUES ($1, $2)
-  RETURNING id, context, salts
+INSERT INTO encryption_data (context, crypto_secret, iv, salts)
+  VALUES ($1, $2, $3, $4)
 ON CONFLICT (context)
-  DO
-  UPDATE salts SET salts = EXCLUDED.salts, updated_at = NOW()
-    WHERE context = EXCLUDED.context;
+  DO UPDATE SET crypto_secret = EXCLUDED.crypto_secret, iv = EXCLUDED.iv, salts = EXCLUDED.salts, updated_at = NOW()
+RETURNING id, context, crypto_secret, iv, salts
 `
 
-func (d *DaoSalts) UpsertSalts(ctx context.Context, s *dao.Salts) error {
-	var id *int
+func (d *DaoEncryptionData) UpsertEncryptionData(ctx context.Context, s *dao.EncryptionData) error {
+	var id int
 
-	if s == nil || s.Context == nil || s.Salts == nil || *s.Salts == "" || *s.Context == "" {
+	if s == nil || s.Context == nil || *s.Context == "" ||
+		len(s.CryptoSecret) == 0 || len(s.IV) == 0 || len(s.Salts) == 0 {
 		return errors.New("Nil or empty value detected")
 	}
 
-	err := d.DB.QueryRowContext(ctx, UpsertSalts, *s.Context, *s.Salts).
+	// Scans should reference not-nil pointers
+	err := d.DB.QueryRowContext(ctx, UpsertSalts, *s.Context, s.CryptoSecret, s.IV, s.Salts).
 		Scan(
-			id,
-			s.Context,
-			s.Salts,
+			&id,
+			&s.Context,
+			&s.CryptoSecret,
+			&s.IV,
+			&s.Salts,
 		)
 	if err != nil {
-		return errors.Wrap(err, "there was an error while inserting the salts")
+		return errors.Wrap(err, "there was an error while upserting the encryption data")
 	}
 
 	log.Println("New salts record was inserted")
 	return nil
 }
 
-const GetSalts = `
+const GetEncryptionDataByContext = `
 SELECT
   id,
   context,
+  crypto_secret,
+  iv,
   salts
-FROM salts
-  WHERE context = $1;
+FROM encryption_data
+  WHERE context = $1
 `
 
-func (d *DaoSalts) GetSalts(ctx context.Context, s *dao.Salts) error {
-	var id *int
+func (d *DaoEncryptionData) GetEncryptionData(ctx context.Context, s *dao.EncryptionData) error {
+	var id int
 
 	if s == nil || s.Context == nil || *s.Context == "" {
 		return errors.New("Nil or empty value detected")
 	}
 
-	rows, err := d.DB.QueryContext(ctx, GetSalts, *s.Context)
-	if err != nil {
-		return errors.Wrap(err, "something went wrong while getting the salts")
-	}
-	defer rows.Close()
-
-	count := 0
-	for rows.Next() {
-		count++
-		err = rows.Scan(
-			id,
-			s.Context,
-			s.Salts,
+	err := d.DB.QueryRowContext(ctx, GetEncryptionDataByContext, *s.Context).
+		Scan(
+			&id,
+			&s.Context,
+			&s.CryptoSecret,
+			&s.IV,
+			&s.Salts,
 		)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				return err
-			}
-			return errors.Wrap(err, "there was an error while getting the salts")
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return err
 		}
-	}
-
-	if count == 0 {
-		return sql.ErrNoRows
-	}
-	if count > 1 {
-		return errors.New("there were more than one salts records for the provided context")
+		return errors.Wrap(err, "there was an error while getting the encryption_data")
 	}
 
 	log.Println("Succeeded getting the salts record")

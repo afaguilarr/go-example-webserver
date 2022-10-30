@@ -51,5 +51,24 @@ func (sc *ServicesCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 
 // Decrypt encrypts a password by using a context string
 func (sc *ServicesCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error) {
-	return &proto.DecryptResponse{DecryptedValue: "jiji"}, nil
+	log.Println("Encrypt RPC was called!")
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "got nil request")
+	}
+
+	if req.Context == "" {
+		return nil, status.Error(codes.InvalidArgument, "context can't be an empty string")
+	}
+
+	if req.EncryptedValue == "" {
+		return nil, status.Error(codes.InvalidArgument, "encrypted value can't be an empty string")
+	}
+
+	resp, err := sc.BusinessCrypto.Decrypt(ctx, req)
+	if err != nil {
+		return nil, status.Errorf(status.Code(err), "error decrypting provided value: %s", err.Error())
+	}
+
+	return resp, nil
 }

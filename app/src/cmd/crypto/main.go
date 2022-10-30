@@ -25,7 +25,7 @@ func main() {
 	cryptoDB := dao.CreateCryptoDBConnection()
 	defer cryptoDB.Close()
 
-	sd := postgres.NewDaoSalts(cryptoDB)
+	sd := postgres.NewDaoEncryptionData(cryptoDB)
 	sb := business.NewBusinessCrypto(sd)
 	sc := services.NewServicesCrypto(sb)
 
