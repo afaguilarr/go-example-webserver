@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package go_webserver.users;
+
+option go_package = "github.com/afaguilarr/go-example-webserver/proto";
+
+import "proto/common.proto";
+
+// Users exposes all the necessary RPCs to handle Users information.
+service Users {
+  // Register receives all necessary information to create a new user,
+  // and then returns the stored information.
+  rpc Register (RegisterRequest) returns (RegisterResponse) {}
+}
+
+// The UserInfo message contains the non-sensitive information of the user.
+message UserInfo {
+    PetMasterInfo pet_master_info = 1; // required
+    string username = 2; // required
+    string description = 3;
+    go_webserver.common.Image profile_pic = 4;
+}
+
+// The PetMasterInfo message contains the information of the PetMaster entity
+// that could be or could not be related to a User entity.
+message PetMasterInfo {
+    string name = 1; // required
+    string contact_number = 2;
+    Location location = 3;
+}
+
+// The Location message  contains the information of the location of a pet master.
+message Location {
+    string country = 1;
+    string state_or_province = 2;
+    string city_or_municipality = 3;
+    string neighborhood = 4;
+    string zip_code = 5;
+}
+
+// The RegisterRequest message contains all necessary information to create a user.
+message RegisterRequest {
+    UserInfo user_info = 1;
+    string password = 2;
+}
+
+// The RegisterResponse message contains the information of the stored user (sans password).
+message RegisterResponse {
+    UserInfo user_info = 1;
+}
