@@ -42,11 +42,13 @@ RUN go mod tidy
 # Copy env so that the environment variables can be processed by the go code
 COPY .env .
 
+# Set db_migrations folder for the child configs
+RUN mkdir db_migrations
+
 #
 # go webserver code
 #
 FROM go_builder as go_webserver
-RUN mkdir db_migrations
 # Set DB migrations for this microservice
 COPY postgres/hello_world/db_migrations ./db_migrations
 
@@ -54,9 +56,15 @@ COPY postgres/hello_world/db_migrations ./db_migrations
 # go crypto code
 #
 FROM go_builder as go_crypto
-RUN mkdir db_migrations
 # Set DB migrations for this microservice
 COPY postgres/crypto/db_migrations ./db_migrations
+
+#
+# go users code
+#
+FROM go_builder as go_users
+# Set DB migrations for this microservice
+COPY postgres/users/db_migrations ./db_migrations
 
 
 #

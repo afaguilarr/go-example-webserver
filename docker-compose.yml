@@ -44,7 +44,28 @@ services:
     # ports:
     #   - '5432:5432'
 
-# The purpose of this container is just being available to execute go linting and unit testing commands
+  postgres_users:
+    container_name: postgres_users
+    image: 'postgres:15'
+    # If this condition is met, the container will be considered healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname=${USERS_POSTGRES_DB} --username=${USERS_POSTGRES_USER}"]
+      interval: 5s
+      start_period: 6s
+    restart: always  # https://serverfault.com/questions/884759/how-does-restart-always-policy-work-in-docker-compose
+    volumes:
+      - './postgres/users/data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_PASSWORD=${USERS_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${USERS_POSTGRES_USER}
+      - POSTGRES_DB=${USERS_POSTGRES_DB}
+      - POSTGRES_HOST=${USERS_POSTGRES_HOST}
+      - POSTGRES_PORT=${USERS_POSTGRES_PORT}
+    # This would let us connect directly without having to connect to the docker container
+    # ports:
+    #   - '5432:5432'
+
+  # The purpose of this container is just being available to execute go linting and unit testing commands
   go_builder:
     container_name: go_builder
     image: go_builder
@@ -52,6 +73,7 @@ services:
       context: ./
       target: go_builder
     volumes:
+      - ./proto:/app/proto
       - ./app/src:/app/src
       - ./app/bin:/app/bin
       - ./.env:/app/.env
@@ -76,6 +98,7 @@ services:
     # These volumes are useful since all the changes done in
     # the source files will be automatically applied to the built containers
     volumes:
+      - ./proto:/app/proto
       - ./app/src:/app/src
       - ./app/bin:/app/bin
       - ./postgres/hello_world/db_migrations:/app/db_migrations
@@ -105,10 +128,36 @@ services:
     # These volumes are useful since all the changes done in
     # the source files will be automatically applied to the built containers
     volumes:
+      - ./proto:/app/proto
       - ./app/src:/app/src
       - ./app/bin:/app/bin
       - ./postgres/crypto/db_migrations:/app/db_migrations
-      - ./proto/crypto:/app/proto
+      - ./.env:/app/.env
+    # This would let us send requests directly without having to connect to the docker container
+    # ports:
+    #   - "80:8080"
+
+  users:
+    container_name: users
+    image: users
+    # This should point to the place where this is defined in the dockerfiles
+    # If this had an independent Dockerfile, we wouldn't need a target
+    build:
+      context: ./
+      target: go_users
+    command: go run ./src/cmd/users/main.go
+    # This will make sure this container will wait until postgres_users
+    # container is up and its healthcheck condition is met
+    depends_on:
+      postgres_users:
+        condition: service_healthy
+    # These volumes are useful since all the changes done in
+    # the source files will be automatically applied to the built containers
+    volumes:
+      - ./proto:/app/proto
+      - ./app/src:/app/src
+      - ./app/bin:/app/bin
+      - ./postgres/users/db_migrations:/app/db_migrations
       - ./.env:/app/.env
     # This would let us send requests directly without having to connect to the docker container
     # ports:

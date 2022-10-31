@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package go_webserver.common;
+
+option go_package = "github.com/afaguilarr/go-example-webserver/proto";
+
+// The Image message contains the information of an image.
+message Image {
+    uint64 width = 1;
+    uint64 height = 2;
+    bytes image_data = 3;
+}
