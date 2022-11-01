@@ -10,10 +10,15 @@ import (
 	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
 	_ "github.com/lib/pq"
+)
+
+const (
+	cryptoDBPrefix = "CRYPTO_"
 )
 
 func main() {
@@ -22,7 +27,11 @@ func main() {
 		log.Fatalf("there was an error loading the env variables: %s", err.Error())
 	}
 
-	cryptoDB := dao.CreateCryptoDBConnection()
+	dbch := dao.NewDBConnectionHandler(cryptoDBPrefix)
+	cryptoDB, err := dbch.CreateDBConnection()
+	if err != nil {
+		panic(errors.Wrap(err, "while creating DB connection"))
+	}
 	defer cryptoDB.Close()
 
 	sd := postgres.NewDaoEncryptionData(cryptoDB)
