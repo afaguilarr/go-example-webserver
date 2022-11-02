@@ -9,14 +9,28 @@ FROM golang:1.19 as go_builder
 
 WORKDIR /app
 
+# Install necessary Linux tools
+RUN apt-get update && \
+    apt-get install --yes --quiet \
+      unzip \
+    && rm --force --recursive /var/lib/apt/lists/*
+
 # Install grpcurl
 RUN go install github.com/fullstorydev/grpcurl/cmd/grpcurl@v1.8.7
 
-# Install protobuf tools, including protoc (necessary to compile protos)
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive \
-    apt-get install --no-install-recommends --assume-yes \
-      protobuf-compiler
+# Download protoc and install to /usr/local/bin
+ENV PROTOC_VERSION 3.14.0
+RUN mkdir --parents "/tmp/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m)/"
+RUN curl --fail --show-error \
+      --location "https://github.com/google/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m).zip" \
+      --output "/tmp/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m)/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m).zip"
+RUN cd "/tmp/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m)/" && \
+    unzip "protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m).zip" && \
+    cp bin/protoc /usr/local/bin/protoc && \
+    mkdir --parents /usr/local/include/google/protobuf && \
+    # This step is really important, since it copies all the well known types where protoc will find them
+    cp --recursive include/google/protobuf/* /usr/local/include/google/protobuf/ && \
+    rm -rf "/tmp/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m)/"
 
 # Install protoc-gen-go (necessary to compile protos)
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
