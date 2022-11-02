@@ -5,39 +5,54 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/pkg/errors"
 )
 
 const (
-	hostKey     = "HELLO_WORLD_POSTGRES_HOST"
-	portKey     = "HELLO_WORLD_POSTGRES_PORT"
-	userKey     = "HELLO_WORLD_POSTGRES_USER"
-	passwordKey = "HELLO_WORLD_POSTGRES_PASSWORD"
-	dbnameKey   = "HELLO_WORLD_POSTGRES_DB"
+	hostKey     = "POSTGRES_HOST"
+	portKey     = "POSTGRES_PORT"
+	userKey     = "POSTGRES_USER"
+	passwordKey = "POSTGRES_PASSWORD"
+	dbnameKey   = "POSTGRES_DB"
 )
 
-func getPSQLInfo() (string, error) {
-	host := os.Getenv(hostKey)
-	port := os.Getenv(portKey)
-	user := os.Getenv(userKey)
-	password := os.Getenv(passwordKey)
-	dbname := os.Getenv(dbnameKey)
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	return psqlInfo, nil
+type DBConnectionHandler struct {
+	KeysPrefix, Host, Port, User, Password, DBName, DataSourceName string
 }
 
-func CreateDBConnection() *sql.DB {
-	psqlInfo, err := getPSQLInfo()
-	if err != nil {
-		panic(err)
+func NewDBConnectionHandler(keysPrefix string) *DBConnectionHandler {
+	return &DBConnectionHandler{
+		KeysPrefix: keysPrefix,
 	}
-	db, err := sql.Open("postgres", psqlInfo)
+}
+
+func (dbch *DBConnectionHandler) populatePSQLInfo() {
+	dbch.Host = os.Getenv(dbch.KeysPrefix + hostKey)
+	dbch.Port = os.Getenv(dbch.KeysPrefix + portKey)
+	dbch.User = os.Getenv(dbch.KeysPrefix + userKey)
+	dbch.Password = os.Getenv(dbch.KeysPrefix + passwordKey)
+	dbch.DBName = os.Getenv(dbch.KeysPrefix + dbnameKey)
+}
+
+func (dbch *DBConnectionHandler) populateDataSourceName() {
+	dbch.DataSourceName = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbch.Host, dbch.Port, dbch.User, dbch.Password, dbch.DBName)
+}
+
+func (dbch *DBConnectionHandler) CreateDBConnection() (*sql.DB, error) {
+	dbch.populatePSQLInfo()
+	dbch.populateDataSourceName()
+
+	db, err := sql.Open("postgres", dbch.DataSourceName)
 	if err != nil {
-		panic(err)
+		return nil, errors.Wrap(err, "while opening database connection")
 	}
+
 	err = db.Ping()
 	if err != nil {
-		panic(err)
+		return nil, errors.Wrap(err, "while pinging database database")
 	}
-	log.Println("The connection to the Hello World DB was successful!")
-	return db
+
+	log.Printf("The connection to the %s DB was successful!\n", dbch.DBName)
+	return db, nil
 }

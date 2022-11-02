@@ -5,8 +5,13 @@ import (
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 
 	_ "github.com/lib/pq"
+)
+
+const (
+	usersDBPrefix = "USERS_"
 )
 
 func main() {
@@ -15,7 +20,11 @@ func main() {
 		log.Fatalf("there was an error loading the env variables: %s", err.Error())
 	}
 
-	usersDB := dao.CreateUsersDBConnection()
+	dbch := dao.NewDBConnectionHandler(usersDBPrefix)
+	usersDB, err := dbch.CreateDBConnection()
+	if err != nil {
+		panic(errors.Wrap(err, "while creating DB connection"))
+	}
 	defer usersDB.Close()
 
 	// sd := postgres.NewDaoEncryptionData(usersDB)

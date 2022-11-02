@@ -15,7 +15,7 @@ github.com/ClickHouse/clickhouse-go/v2/lib/driver
 github.com/ClickHouse/clickhouse-go/v2/lib/io
 github.com/ClickHouse/clickhouse-go/v2/lib/proto
 github.com/ClickHouse/clickhouse-go/v2/lib/timezone
-# github.com/afaguilarr/go-example-webserver/proto v0.0.0-20221026005202-d2489f2268d4
+# github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.0
 ## explicit; go 1.19
 github.com/afaguilarr/go-example-webserver/proto
 # github.com/denisenkom/go-mssqldb v0.12.2

@@ -14,11 +14,16 @@ import (
 	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+)
+
+const (
+	helloWorldDBPrefix = "HELLO_WORLD_"
 )
 
 type world struct {
@@ -106,7 +111,11 @@ func main() {
 		log.Fatalf("there was an error loading the env variables: %s", err.Error())
 	}
 
-	db := dao.CreateDBConnection()
+	dbch := dao.NewDBConnectionHandler(helloWorldDBPrefix)
+	db, err := dbch.CreateDBConnection()
+	if err != nil {
+		panic(errors.Wrap(err, "while creating DB connection"))
+	}
 	defer db.Close()
 
 	hnHandler := services.NewHelloNameHandler(db)

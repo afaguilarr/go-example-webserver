@@ -5,7 +5,7 @@ go 1.19
 require github.com/lib/pq v1.10.7
 
 require (
-	github.com/afaguilarr/go-example-webserver/proto v0.0.0-20221026005202-d2489f2268d4
+	github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.0
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.4.0
 	github.com/pkg/errors v0.9.1

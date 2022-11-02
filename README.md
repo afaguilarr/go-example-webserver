@@ -105,6 +105,11 @@ docker-compose run go_builder grpcurl -plaintext -d '${REQUEST_BODY}' ${MICROSER
 Every change has to be made via a Pull Request, and CircleCI checks are needed.
 Even for the repo administrators.
 
+## Github Releases
+
+To understand how Github releases work for this repository, this documentation should be useful: https://github.com/go-modules-by-example/index/blob/master/009_submodules/README.md.
+This section will probably change once a React.js UI is added.
+
 ## Dependabot
 
 This repo uses Dependabot to keep its Go dependencies up to date.

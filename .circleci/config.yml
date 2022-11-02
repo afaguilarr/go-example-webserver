@@ -46,6 +46,9 @@ jobs:
           name: "Set up crypto DB"
           command: "docker-compose run crypto sh bin/goose_apply_migrations.sh postgres_crypto admin admin crypto"
       - run:
+          name: "Set up users DB"
+          command: "docker-compose run users sh bin/goose_apply_migrations.sh postgres_users admin admin users"
+      - run:
           name: "Run functional tests"
           command: |
             mkdir test/report
