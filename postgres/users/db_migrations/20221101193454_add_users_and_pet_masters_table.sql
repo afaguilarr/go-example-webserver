@@ -1,11 +1,12 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE users (
-    id          BIGSERIAL PRIMARY KEY,
-    username    text NOT NULL UNIQUE,
-    description text,
-    created_at  TIMESTAMP NOT NULL DEFAULT (now() AT TIME ZONE 'utc'),
-    updated_at  TIMESTAMP NOT NULL DEFAULT (now() AT TIME ZONE 'utc')
+    id                 BIGSERIAL PRIMARY KEY,
+    username           text NOT NULL UNIQUE,
+    description        text,
+    encrypted_password text NOT NULL,
+    created_at         TIMESTAMP NOT NULL DEFAULT (now() AT TIME ZONE 'utc'),
+    updated_at         TIMESTAMP NOT NULL DEFAULT (now() AT TIME ZONE 'utc')
 );
 CREATE INDEX users_id ON users (id);
 CREATE INDEX users_username ON users (username);

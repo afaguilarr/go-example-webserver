@@ -20,8 +20,8 @@ func NewDaoUsers(db *sql.DB) *DaoUsers {
 }
 
 const InsertUserQuery = `
-INSERT INTO users (username, description) VALUES ($1, $2)
-RETURNING id, username, description
+INSERT INTO users (username, description, encrypted_password) VALUES ($1, $2, $3)
+RETURNING id, username, description, encrypted_password
 `
 
 // InsertUser executes a transaction that inserts the data
@@ -29,7 +29,7 @@ RETURNING id, username, description
 func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 	var userID, petMasterID, locationID int
 
-	if u == nil || u.PetMasterInfo == nil || u.PetMasterInfo.Location == nil {
+	if u == nil || u.PetMasterInfo == nil || u.PetMasterInfo.Location == nil || u.EncryptedPassword == nil {
 		return errors.New("Nil value detected")
 	}
 
@@ -44,11 +44,12 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 	// Defer a rollback in case anything fails.
 	defer tx.Rollback()
 
-	err = tx.QueryRowContext(ctx, InsertUserQuery, u.Username, u.Description).
+	err = tx.QueryRowContext(ctx, InsertUserQuery, u.Username, u.Description, u.EncryptedPassword).
 		Scan(
 			&userID,
 			&u.Username,
 			u.Description,
+			&u.EncryptedPassword,
 		)
 	if err != nil {
 		return errors.Wrap(err, "while inserting the user")

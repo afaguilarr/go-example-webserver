@@ -9,14 +9,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/afaguilarr/go-example-webserver/app/src/cmd"
+	"github.com/afaguilarr/go-example-webserver/app/src/crypto_client"
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
 	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -78,18 +78,20 @@ func testRPC(w http.ResponseWriter, r *http.Request) {
 	log.Println("Test RPC called")
 	switch r.Method {
 	case http.MethodGet:
-		addr := "crypto:8080"
-		// Set up a connection to the server.
-		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		cc := crypto_client.NewCryptoClientHandler(cmd.CryptoHost, cmd.DefaultPort)
+		err := cc.CreateConnection()
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("while creating Crypto Connection: %s", err)
 		}
-		defer conn.Close()
-		c := proto.NewCryptoClient(conn)
-		// Contact the server and print out its response.
+		defer func() {
+			err := cc.CloseConnection()
+			if err != nil {
+				log.Fatalf("while closing Crypto Connection: %s", err)
+			}
+		}()
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		resp, err := c.Encrypt(ctx, &proto.EncryptRequest{
+		resp, err := cc.Encrypt(ctx, &proto.EncryptRequest{
 			Context:          "jiji",
 			UnencryptedValue: "jojo",
 		})
