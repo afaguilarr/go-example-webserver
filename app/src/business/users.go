@@ -3,9 +3,11 @@ package business
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/crypto_client"
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
+	"github.com/afaguilarr/go-example-webserver/app/src/dao/postgres"
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,12 +39,17 @@ func (bu *BusinessUsers) Register(ctx context.Context, req *proto.RegisterReques
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprintf("while calling Encrypt RPC: %s", err.Error()))
 	}
+	log.Println("Password was encrypted successfully!")
 
 	daoUser := ProtoUserToDaoUser(userInfo, encryptedPassword)
 	err = bu.DaoUsers.InsertUser(ctx, daoUser)
 	if err != nil {
-		status.Error(codes.Internal, fmt.Sprintf("while inserting the user: %s", err.Error()))
+		if err == postgres.UniqueUsernameErr {
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		}
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while inserting the user: %s", err.Error()))
 	}
+	log.Println("User was inserted successfully!")
 
 	return &proto.RegisterResponse{
 		UserInfo: userInfo,

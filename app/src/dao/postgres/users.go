@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"strings"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/pkg/errors"
@@ -23,6 +24,10 @@ const InsertUserQuery = `
 INSERT INTO users (username, description, encrypted_password) VALUES ($1, $2, $3)
 RETURNING id, username, description, encrypted_password
 `
+
+const uniqueUsernameError = "duplicate key value violates unique constraint \"users_username_key\""
+
+var UniqueUsernameErr = errors.New("username already exists")
 
 // InsertUser executes a transaction that inserts the data
 // for the User, the PetMaster, and the Location related to the user
@@ -48,10 +53,13 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 		Scan(
 			&userID,
 			&u.Username,
-			u.Description,
+			&u.Description,
 			&u.EncryptedPassword,
 		)
 	if err != nil {
+		if strings.Contains(err.Error(), uniqueUsernameError) {
+			return UniqueUsernameErr
+		}
 		return errors.Wrap(err, "while inserting the user")
 	}
 
@@ -59,7 +67,7 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 		Scan(
 			&petMasterID,
 			&petMasterInfo.Name,
-			petMasterInfo.ContactNumber,
+			&petMasterInfo.ContactNumber,
 			&userID,
 		)
 	if err != nil {
@@ -70,10 +78,10 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 		Scan(
 			&locationID,
 			&location.Country,
-			location.StateOrProvince,
-			location.CityOrMunicipality,
-			location.Neighborhood,
-			location.ZipCode,
+			&location.StateOrProvince,
+			&location.CityOrMunicipality,
+			&location.Neighborhood,
+			&location.ZipCode,
 			&petMasterID,
 		)
 	if err != nil {

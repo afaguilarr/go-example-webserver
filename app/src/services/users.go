@@ -23,7 +23,7 @@ func NewServicesUsers(businessUsers business.BusinessUsersHandler) *ServicesUser
 
 // Register registers a user, its pet master associated entity, and its location associated entity
 func (su *ServicesUsers) Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error) {
-	log.Println("Encrypt RPC was called!")
+	log.Println("Register RPC was called!")
 
 	if req == nil || req.UserInfo == nil ||
 		req.UserInfo.PetMasterInfo == nil || req.UserInfo.PetMasterInfo.Location == nil {

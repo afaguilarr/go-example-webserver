@@ -12,13 +12,13 @@ func ProtoLocationToDaoLocation(protoLocation *proto.Location) *dao.Location {
 		sp = &protoLocation.StateOrProvince.Value
 	}
 	if protoLocation.CityOrMunicipality != nil {
-		sp = &protoLocation.CityOrMunicipality.Value
+		cm = &protoLocation.CityOrMunicipality.Value
 	}
 	if protoLocation.Neighborhood != nil {
-		sp = &protoLocation.Neighborhood.Value
+		n = &protoLocation.Neighborhood.Value
 	}
 	if protoLocation.ZipCode != nil {
-		sp = &protoLocation.ZipCode.Value
+		zp = &protoLocation.ZipCode.Value
 	}
 
 	return &dao.Location{

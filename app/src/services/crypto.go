@@ -51,7 +51,7 @@ func (sc *ServicesCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 
 // Decrypt encrypts a password by using a context string
 func (sc *ServicesCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error) {
-	log.Println("Encrypt RPC was called!")
+	log.Println("Decrypt RPC was called!")
 
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "got nil request")
