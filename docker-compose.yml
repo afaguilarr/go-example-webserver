@@ -189,4 +189,5 @@ services:
     # the source files will be automatically applied to the built containers
     volumes:
       - ./test:/app
+      - ./proto:/app/proto
       - ./.env:/app/.env

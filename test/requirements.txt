@@ -5,3 +5,4 @@ pylint
 sqlalchemy
 psycopg2-binary
 python-dotenv
+grpcio-tools
