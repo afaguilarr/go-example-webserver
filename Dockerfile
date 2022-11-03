@@ -91,6 +91,13 @@ WORKDIR /app
 COPY test/requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
+RUN mkdir proto
+# Move proto files to proto folder
+COPY proto/ ./proto
+RUN mkdir bin
+COPY test/bin/ ./bin
+RUN sh bin/generate_protos.sh
+
 # Copy all files in this directory to the /app WORKDIR, so that the container has access to all relevant code
 # Leave this at the bottom always, in order to improve docker automatic caching
 COPY test/ .
