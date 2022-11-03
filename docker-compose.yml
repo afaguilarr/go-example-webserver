@@ -152,7 +152,7 @@ services:
       postgres_users:
         condition: service_healthy
       crypto:
-        condition: service_healthy
+        condition: service_started
     # These volumes are useful since all the changes done in
     # the source files will be automatically applied to the built containers
     volumes:
