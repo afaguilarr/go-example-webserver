@@ -3,7 +3,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 from functional.steps_context import StepsContext
-
+# import proto.crypto_pb2
+# This will let us access the protobuf messages, such as proto.crypto_pb2.EncryptRequest
 
 @pytest.fixture(scope="function")
 def steps_context() -> StepsContext:
