@@ -35,7 +35,7 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 	var userID, petMasterID, locationID int
 
 	if u == nil || u.PetMasterInfo == nil || u.PetMasterInfo.Location == nil || u.EncryptedPassword == nil {
-		return errors.New("Nil value detected")
+		return errors.New("nil value detected")
 	}
 
 	petMasterInfo := u.PetMasterInfo
@@ -96,4 +96,24 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 
 	log.Println("New user, pet master, and location records were inserted")
 	return nil
+}
+
+const CheckUserByUsernameQuery = `SELECT id FROM users WHERE username = $1`
+
+// CheckUserByUsername checks if a user already exists
+func (d *DaoUsers) CheckUserByUsername(ctx context.Context, u string) (bool, error) {
+	if u == "" {
+		return false, errors.New("username can't be empty")
+	}
+
+	row := d.DB.QueryRowContext(ctx, CheckUserByUsernameQuery, u)
+	if row.Err() != nil {
+		if row.Err() == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, errors.Wrap(row.Err(), "while checking the user by username")
+	}
+
+	log.Println("Found a user with the provided username!")
+	return true, nil
 }
