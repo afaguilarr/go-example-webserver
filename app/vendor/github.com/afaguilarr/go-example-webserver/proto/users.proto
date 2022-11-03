@@ -12,6 +12,9 @@ service Users {
   // Register receives all necessary information to create a new user,
   // and then returns the stored information.
   rpc Register (RegisterRequest) returns (RegisterResponse) {}
+  // LogIn receives a username and a password, and then returns both a JWT access token,
+  // and a JWT refresh token
+  rpc LogIn (LogInRequest) returns (LogInResponse) {}
 }
 
 // The UserInfo message contains the non-sensitive information of the user.
@@ -48,4 +51,16 @@ message RegisterRequest {
 // The RegisterResponse message contains the information of the stored user (sans password).
 message RegisterResponse {
     UserInfo user_info = 1;
+}
+
+// The LogInRequest message contains the username and password of the user.
+message LogInRequest {
+    string username = 1;
+    string password = 2;
+}
+
+// The LogInResponse message contains the tokens to keep accessing the app.
+message LogInResponse {
+    string access_token = 1;
+    string refresh_token = 2;
 }
