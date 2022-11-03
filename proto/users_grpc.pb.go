@@ -25,6 +25,9 @@ type UsersClient interface {
 	// Register receives all necessary information to create a new user,
 	// and then returns the stored information.
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	// LogIn receives a username and a password, and then returns both a JWT access token,
+	// and a JWT refresh token
+	LogIn(ctx context.Context, in *LogInRequest, opts ...grpc.CallOption) (*LogInResponse, error)
 }
 
 type usersClient struct {
@@ -44,6 +47,15 @@ func (c *usersClient) Register(ctx context.Context, in *RegisterRequest, opts ..
 	return out, nil
 }
 
+func (c *usersClient) LogIn(ctx context.Context, in *LogInRequest, opts ...grpc.CallOption) (*LogInResponse, error) {
+	out := new(LogInResponse)
+	err := c.cc.Invoke(ctx, "/go_webserver.users.Users/LogIn", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility
@@ -51,6 +63,9 @@ type UsersServer interface {
 	// Register receives all necessary information to create a new user,
 	// and then returns the stored information.
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	// LogIn receives a username and a password, and then returns both a JWT access token,
+	// and a JWT refresh token
+	LogIn(context.Context, *LogInRequest) (*LogInResponse, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -60,6 +75,9 @@ type UnimplementedUsersServer struct {
 
 func (UnimplementedUsersServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedUsersServer) LogIn(context.Context, *LogInRequest) (*LogInResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LogIn not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 
@@ -92,6 +110,24 @@ func _Users_Register_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_LogIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogInRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).LogIn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go_webserver.users.Users/LogIn",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).LogIn(ctx, req.(*LogInRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +138,10 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Register",
 			Handler:    _Users_Register_Handler,
+		},
+		{
+			MethodName: "LogIn",
+			Handler:    _Users_LogIn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

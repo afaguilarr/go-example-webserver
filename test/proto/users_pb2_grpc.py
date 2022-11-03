@@ -20,6 +20,11 @@ class UsersStub(object):
                 request_serializer=proto_dot_users__pb2.RegisterRequest.SerializeToString,
                 response_deserializer=proto_dot_users__pb2.RegisterResponse.FromString,
                 )
+        self.LogIn = channel.unary_unary(
+                '/go_webserver.users.Users/LogIn',
+                request_serializer=proto_dot_users__pb2.LogInRequest.SerializeToString,
+                response_deserializer=proto_dot_users__pb2.LogInResponse.FromString,
+                )
 
 
 class UsersServicer(object):
@@ -34,6 +39,14 @@ class UsersServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def LogIn(self, request, context):
+        """LogIn receives a username and a password, and then returns both a JWT access token,
+        and a JWT refresh token
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_UsersServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -41,6 +54,11 @@ def add_UsersServicer_to_server(servicer, server):
                     servicer.Register,
                     request_deserializer=proto_dot_users__pb2.RegisterRequest.FromString,
                     response_serializer=proto_dot_users__pb2.RegisterResponse.SerializeToString,
+            ),
+            'LogIn': grpc.unary_unary_rpc_method_handler(
+                    servicer.LogIn,
+                    request_deserializer=proto_dot_users__pb2.LogInRequest.FromString,
+                    response_serializer=proto_dot_users__pb2.LogInResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -67,5 +85,22 @@ class Users(object):
         return grpc.experimental.unary_unary(request, target, '/go_webserver.users.Users/Register',
             proto_dot_users__pb2.RegisterRequest.SerializeToString,
             proto_dot_users__pb2.RegisterResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def LogIn(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/go_webserver.users.Users/LogIn',
+            proto_dot_users__pb2.LogInRequest.SerializeToString,
+            proto_dot_users__pb2.LogInResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -11,4 +11,5 @@ type User struct {
 
 type DaoUsersHandler interface {
 	InsertUser(ctx context.Context, u *User) error
+	CheckUserByUsername(ctx context.Context, u string) (bool, error)
 }
