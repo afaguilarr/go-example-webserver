@@ -92,8 +92,9 @@ COPY test/requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 RUN mkdir proto
+RUN mkdir /proto
 # Move proto files to proto folder
-COPY proto/ ./proto
+COPY proto/ /proto
 RUN mkdir bin
 COPY test/bin/ ./bin
 RUN sh bin/generate_protos.sh
