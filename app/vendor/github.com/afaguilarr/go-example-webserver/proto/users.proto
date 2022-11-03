@@ -4,6 +4,7 @@ package go_webserver.users;
 
 option go_package = "github.com/afaguilarr/go-example-webserver/proto";
 
+import "google/protobuf/wrappers.proto";
 import "proto/common.proto";
 
 // Users exposes all the necessary RPCs to handle Users information.
@@ -17,7 +18,7 @@ service Users {
 message UserInfo {
     PetMasterInfo pet_master_info = 1; // required
     string username = 2; // required
-    string description = 3;
+    google.protobuf.StringValue description = 3;
     go_webserver.common.Image profile_pic = 4;
 }
 
@@ -25,17 +26,17 @@ message UserInfo {
 // that could be or could not be related to a User entity.
 message PetMasterInfo {
     string name = 1; // required
-    string contact_number = 2;
+    google.protobuf.StringValue contact_number = 2;
     Location location = 3;
 }
 
 // The Location message  contains the information of the location of a pet master.
 message Location {
-    string country = 1;
-    string state_or_province = 2;
-    string city_or_municipality = 3;
-    string neighborhood = 4;
-    string zip_code = 5;
+    string country = 1; // required
+    google.protobuf.StringValue state_or_province = 2;
+    google.protobuf.StringValue city_or_municipality = 3;
+    google.protobuf.StringValue neighborhood = 4;
+    google.protobuf.StringValue zip_code = 5;
 }
 
 // The RegisterRequest message contains all necessary information to create a user.

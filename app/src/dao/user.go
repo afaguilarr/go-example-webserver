@@ -3,9 +3,10 @@ package dao
 import "context"
 
 type User struct {
-	Username      string
-	Description   *string
-	PetMasterInfo *PetMaster
+	Username          string
+	Description       *string
+	EncryptedPassword *string
+	PetMasterInfo     *PetMaster
 }
 
 type DaoUsersHandler interface {

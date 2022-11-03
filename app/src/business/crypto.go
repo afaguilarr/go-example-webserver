@@ -30,9 +30,9 @@ type BusinessCrypto struct {
 	DaoEncryption dao.DaoEncryptionHandler
 }
 
-func NewBusinessCrypto(daoSalts dao.DaoEncryptionHandler) *BusinessCrypto {
+func NewBusinessCrypto(daoEncryption dao.DaoEncryptionHandler) *BusinessCrypto {
 	return &BusinessCrypto{
-		DaoEncryption: daoSalts,
+		DaoEncryption: daoEncryption,
 	}
 }
 
