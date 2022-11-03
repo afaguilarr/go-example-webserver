@@ -11,8 +11,8 @@ github.com/ClickHouse/clickhouse-go/v2 v2.2.0/go.mod h1:8f2XZUi7XoeU+uPIytSi1cvx
 github.com/Masterminds/semver/v3 v3.1.1 h1:hLg3sBzpNErnxhQtUy/mmLR2I9foDujNK030IGemrRc=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
-github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.1 h1:bA2v7mLURRyi+fPSFPMeBflzgO/ViVwRUwjnEVlEaSk=
-github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.1/go.mod h1:Hz3ydVe1y8Eru8IfLKz0MixJXBv1K7nWf8L1cSiawoQ=
+github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.2 h1:tpYd7dm7U4cl70QQTEsLbqpOgvthiknZ8iQr5VsUYuI=
+github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.2/go.mod h1:Hz3ydVe1y8Eru8IfLKz0MixJXBv1K7nWf8L1cSiawoQ=
 github.com/bkaradzic/go-lz4 v1.0.0/go.mod h1:0YdlkowM3VswSROI7qDxhRvJ3sLhlFrRRwjwegp5jy4=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
