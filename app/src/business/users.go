@@ -2,6 +2,7 @@ package business
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -15,6 +16,7 @@ import (
 
 type BusinessUsersHandler interface {
 	Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error)
+	LogIn(ctx context.Context, req *proto.LogInRequest) (*proto.LogInResponse, error)
 }
 
 type BusinessUsers struct {
@@ -92,4 +94,48 @@ func ProtoUserToDaoUser(protoUser *proto.UserInfo, encryptedPassword *string) *d
 		PetMasterInfo:     pm,
 		EncryptedPassword: encryptedPassword,
 	}
+}
+
+func (bu *BusinessUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*proto.LogInResponse, error) {
+	unmatchedUsernameAndPass := status.Error(codes.InvalidArgument, "username and password don't match")
+
+	encryptedPassword, err := bu.DaoUsers.GetPasswordByUsername(ctx, req.Username)
+	if encryptedPassword == "" || err == sql.ErrNoRows {
+		return nil, unmatchedUsernameAndPass
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while getting the user password: %s", err.Error()))
+	}
+
+	password, err := bu.DecryptPassword(ctx, req.Username, encryptedPassword)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while decrypting the user password: %s", err.Error()))
+	}
+
+	if *password != req.Password {
+		return nil, unmatchedUsernameAndPass
+	}
+	log.Println("User and Password matched!")
+
+	return &proto.LogInResponse{
+		AccessToken:  "",
+		RefreshToken: "",
+	}, nil
+}
+
+func (bu *BusinessUsers) DecryptPassword(ctx context.Context, username, password string) (*string, error) {
+	decryptReq := &proto.DecryptRequest{
+		Context:        PasswordEncryptionContext(username),
+		EncryptedValue: password,
+	}
+
+	decryptResp, err := bu.CryptoClient.Decrypt(
+		ctx,
+		decryptReq,
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while decrypting password: %s", err.Error()))
+	}
+
+	return &decryptResp.DecryptedValue, nil
 }

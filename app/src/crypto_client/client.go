@@ -15,6 +15,7 @@ type CryptoClientHandlerInterface interface {
 	CreateConnection() error
 	CloseConnection() error
 	Encrypt(ctx context.Context, req *proto.EncryptRequest) (*proto.EncryptResponse, error)
+	Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error)
 }
 
 type CryptoClientHandler struct {
@@ -58,6 +59,14 @@ func (cc *CryptoClientHandler) Encrypt(ctx context.Context, req *proto.EncryptRe
 	resp, err := cc.Client.Encrypt(ctx, req)
 	if err != nil {
 		return resp, errors.Wrap(err, "while calling Encrypt RPC")
+	}
+	return resp, nil
+}
+
+func (cc *CryptoClientHandler) Decrypt(ctx context.Context, req *proto.DecryptRequest) (*proto.DecryptResponse, error) {
+	resp, err := cc.Client.Decrypt(ctx, req)
+	if err != nil {
+		return resp, errors.Wrap(err, "while calling Decrypt RPC")
 	}
 	return resp, nil
 }

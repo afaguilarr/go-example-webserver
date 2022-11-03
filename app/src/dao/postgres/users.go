@@ -98,22 +98,26 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 	return nil
 }
 
-const CheckUserByUsernameQuery = `SELECT id FROM users WHERE username = $1`
+const GetPasswordByUsernameQuery = `SELECT encrypted_password FROM users WHERE username = $1`
 
-// CheckUserByUsername checks if a user already exists
-func (d *DaoUsers) CheckUserByUsername(ctx context.Context, u string) (bool, error) {
+// GetPasswordByUsername returns the encrypted password of a user, querying it by its username
+func (d *DaoUsers) GetPasswordByUsername(ctx context.Context, u string) (string, error) {
+	var encryptedPassword string
+
 	if u == "" {
-		return false, errors.New("username can't be empty")
+		return "", errors.New("username can't be empty")
 	}
 
-	row := d.DB.QueryRowContext(ctx, CheckUserByUsernameQuery, u)
-	if row.Err() != nil {
-		if row.Err() == sql.ErrNoRows {
-			return false, nil
+	err := d.DB.QueryRowContext(ctx, GetPasswordByUsernameQuery, u).Scan(
+		&encryptedPassword,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", err
 		}
-		return false, errors.Wrap(row.Err(), "while checking the user by username")
+		return "", errors.Wrap(err, "while getting the password by username")
 	}
 
-	log.Println("Found a user with the provided username!")
-	return true, nil
+	log.Println("Found an encrypted password password with the provided username!")
+	return encryptedPassword, nil
 }
