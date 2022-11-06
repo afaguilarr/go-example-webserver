@@ -53,3 +53,28 @@ func (su *ServicesUsers) Register(ctx context.Context, req *proto.RegisterReques
 
 	return resp, nil
 }
+
+// LogIn returns an access token and a refresh token to the client after checking the correctness
+// of a username-password pair
+func (su *ServicesUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*proto.LogInResponse, error) {
+	log.Println("LogIn RPC was called!")
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "got nil value in the request")
+	}
+
+	if req.Username == "" {
+		return nil, status.Error(codes.InvalidArgument, "username can't be an empty string")
+	}
+
+	if req.Password == "" {
+		return nil, status.Error(codes.InvalidArgument, "password can't be an empty string")
+	}
+
+	resp, err := su.BusinessUsers.LogIn(ctx, req)
+	if err != nil {
+		return nil, status.Errorf(status.Code(err), "while logging user in: %s", err.Error())
+	}
+
+	return resp, nil
+}
