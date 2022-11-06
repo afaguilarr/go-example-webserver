@@ -5,13 +5,21 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/crypto_client"
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/dao/postgres"
 	"github.com/afaguilarr/go-example-webserver/proto"
+	"github.com/golang-jwt/jwt"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	accessTokenSecretKey = "ACCESS_TOKEN_SECRET"
 )
 
 type BusinessUsersHandler interface {
@@ -117,9 +125,26 @@ func (bu *BusinessUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*p
 	}
 	log.Println("User and Password matched!")
 
+	secret := []byte(os.Getenv(accessTokenSecretKey))
+	accessToken, err := GenerateJWT(secret, req.Username, 1*time.Minute)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while generating access JWT token: %s", err.Error()))
+	}
+
+	refreshTokenSecret, err := generateRandomBytes(secretNumberOfBytes)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "while generating refresh token secret: %s", err.Error())
+	}
+	bu.DaoUsers.SetUserRefreshTokenSecret(ctx, req.Username, refreshTokenSecret)
+
+	refreshToken, err := GenerateJWT(refreshTokenSecret, req.Username, 150*time.Hour)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while generating refresh JWT token: %s", err.Error()))
+	}
+
 	return &proto.LogInResponse{
-		AccessToken:  "",
-		RefreshToken: "",
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}, nil
 }
 
@@ -138,4 +163,18 @@ func (bu *BusinessUsers) DecryptPassword(ctx context.Context, username, password
 	}
 
 	return &decryptResp.DecryptedValue, nil
+}
+
+func GenerateJWT(secret []byte, username string, d time.Duration) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["exp"] = time.Now().Add(d)
+	claims["authorized"] = true
+	claims["user"] = username
+
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "", errors.Wrap(err, "while signing JWT")
+	}
+	return tokenString, nil
 }

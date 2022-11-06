@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	SECRET_BYTES  = 32
-	PW_SALT_BYTES = 64
+	secretNumberOfBytes = 32
+	pwSaltBytes         = 64
 )
 
 type BusinessCryptoHandler interface {
@@ -37,7 +37,7 @@ func NewBusinessCrypto(daoEncryption dao.DaoEncryptionHandler) *BusinessCrypto {
 }
 
 func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest) (*proto.EncryptResponse, error) {
-	secret, err := generateRandomBytes(SECRET_BYTES)
+	secret, err := generateRandomBytes(secretNumberOfBytes)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "while generating secret: %s", err.Error())
 	}
@@ -55,7 +55,7 @@ func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 	cfb := cipher.NewCFBEncrypter(block, iv)
 
 	plainText := []byte(req.UnencryptedValue)
-	salts, err := generateRandomBytes(PW_SALT_BYTES)
+	salts, err := generateRandomBytes(pwSaltBytes)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "while generating salts: %s", err.Error())
 	}
@@ -123,7 +123,7 @@ func (bc *BusinessCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest
 
 	saltedValue := make([]byte, len(cipherText))
 	cfb.XORKeyStream(saltedValue, cipherText)
-	decryptedValue := string(saltedValue[0:(len(saltedValue) - PW_SALT_BYTES)])
+	decryptedValue := string(saltedValue[0:(len(saltedValue) - pwSaltBytes)])
 
 	// For some reason, the decrypted value included an indefinite number of \u0000 characters
 	// at the beginning of the string. Trimming those looks like it fixes the issue.

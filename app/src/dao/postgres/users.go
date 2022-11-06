@@ -121,3 +121,26 @@ func (d *DaoUsers) GetPasswordByUsername(ctx context.Context, u string) (string,
 	log.Println("Found an encrypted password password with the provided username!")
 	return encryptedPassword, nil
 }
+
+const SetRefreshTokenSecretQuery = `
+UPDATE users SET encrypted_refresh_token_secret = $1
+  WHERE username = $2
+`
+
+// SetRefreshTokenSecret sets the secret for the Refresh JWT Token
+func (d *DaoUsers) SetUserRefreshTokenSecret(ctx context.Context, u string, encryptedRefreshToken []byte) error {
+	if u == "" || len(encryptedRefreshToken) == 0 {
+		return errors.New("empty value detected")
+	}
+
+	row := d.DB.QueryRowContext(ctx, SetRefreshTokenSecretQuery, encryptedRefreshToken, u)
+	if row.Err() != nil {
+		if row.Err() == sql.ErrNoRows {
+			return row.Err()
+		}
+		return errors.Wrap(row.Err(), "while setting the refresh token secret")
+	}
+
+	log.Println("Set the refresh token secret properly!")
+	return nil
+}
