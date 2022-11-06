@@ -26,8 +26,17 @@ type UsersClient interface {
 	// and then returns the stored information.
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	// LogIn receives a username and a password, and then returns both a JWT access token,
-	// and a JWT refresh token
+	// and a JWT refresh token.
 	LogIn(ctx context.Context, in *LogInRequest, opts ...grpc.CallOption) (*LogInResponse, error)
+	// Authenticate receives a JWT access token and its username,
+	// and verifies if the access token is valid.
+	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
+	// RefreshAccessToken receives and verifies the correctness of a JWT refresh token,
+	// and returns a new valid JWT access token.
+	RefreshAccessToken(ctx context.Context, in *RefreshAccessTokenRequest, opts ...grpc.CallOption) (*RefreshAccessTokenResponse, error)
+	// LogOut receives the information of a user, and revokes its refresh token secret, so that a new
+	// Login process has to be made in order to create a new refresh token secret.
+	LogOut(ctx context.Context, in *LogOutRequest, opts ...grpc.CallOption) (*LogOutResponse, error)
 }
 
 type usersClient struct {
@@ -56,6 +65,33 @@ func (c *usersClient) LogIn(ctx context.Context, in *LogInRequest, opts ...grpc.
 	return out, nil
 }
 
+func (c *usersClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
+	out := new(AuthenticateResponse)
+	err := c.cc.Invoke(ctx, "/go_webserver.users.Users/Authenticate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) RefreshAccessToken(ctx context.Context, in *RefreshAccessTokenRequest, opts ...grpc.CallOption) (*RefreshAccessTokenResponse, error) {
+	out := new(RefreshAccessTokenResponse)
+	err := c.cc.Invoke(ctx, "/go_webserver.users.Users/RefreshAccessToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersClient) LogOut(ctx context.Context, in *LogOutRequest, opts ...grpc.CallOption) (*LogOutResponse, error) {
+	out := new(LogOutResponse)
+	err := c.cc.Invoke(ctx, "/go_webserver.users.Users/LogOut", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility
@@ -64,8 +100,17 @@ type UsersServer interface {
 	// and then returns the stored information.
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	// LogIn receives a username and a password, and then returns both a JWT access token,
-	// and a JWT refresh token
+	// and a JWT refresh token.
 	LogIn(context.Context, *LogInRequest) (*LogInResponse, error)
+	// Authenticate receives a JWT access token and its username,
+	// and verifies if the access token is valid.
+	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
+	// RefreshAccessToken receives and verifies the correctness of a JWT refresh token,
+	// and returns a new valid JWT access token.
+	RefreshAccessToken(context.Context, *RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error)
+	// LogOut receives the information of a user, and revokes its refresh token secret, so that a new
+	// Login process has to be made in order to create a new refresh token secret.
+	LogOut(context.Context, *LogOutRequest) (*LogOutResponse, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -78,6 +123,15 @@ func (UnimplementedUsersServer) Register(context.Context, *RegisterRequest) (*Re
 }
 func (UnimplementedUsersServer) LogIn(context.Context, *LogInRequest) (*LogInResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LogIn not implemented")
+}
+func (UnimplementedUsersServer) Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
+}
+func (UnimplementedUsersServer) RefreshAccessToken(context.Context, *RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshAccessToken not implemented")
+}
+func (UnimplementedUsersServer) LogOut(context.Context, *LogOutRequest) (*LogOutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LogOut not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 
@@ -128,6 +182,60 @@ func _Users_LogIn_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).Authenticate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go_webserver.users.Users/Authenticate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).Authenticate(ctx, req.(*AuthenticateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_RefreshAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).RefreshAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go_webserver.users.Users/RefreshAccessToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).RefreshAccessToken(ctx, req.(*RefreshAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Users_LogOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogOutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).LogOut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go_webserver.users.Users/LogOut",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).LogOut(ctx, req.(*LogOutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -142,6 +250,18 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LogIn",
 			Handler:    _Users_LogIn_Handler,
+		},
+		{
+			MethodName: "Authenticate",
+			Handler:    _Users_Authenticate_Handler,
+		},
+		{
+			MethodName: "RefreshAccessToken",
+			Handler:    _Users_RefreshAccessToken_Handler,
+		},
+		{
+			MethodName: "LogOut",
+			Handler:    _Users_LogOut_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

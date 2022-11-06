@@ -15,7 +15,7 @@ from google.protobuf import wrappers_pb2 as google_dot_protobuf_dot_wrappers__pb
 from proto import common_pb2 as proto_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11proto/users.proto\x12\x12go_webserver.users\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x12proto/common.proto\"\xbc\x01\n\x08UserInfo\x12:\n\x0fpet_master_info\x18\x01 \x01(\x0b\x32!.go_webserver.users.PetMasterInfo\x12\x10\n\x08username\x18\x02 \x01(\t\x12\x31\n\x0b\x64\x65scription\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12/\n\x0bprofile_pic\x18\x04 \x01(\x0b\x32\x1a.go_webserver.common.Image\"\x83\x01\n\rPetMasterInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x34\n\x0e\x63ontact_number\x18\x02 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12.\n\x08location\x18\x03 \x01(\x0b\x32\x1c.go_webserver.users.Location\"\xf4\x01\n\x08Location\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x37\n\x11state_or_province\x18\x02 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12:\n\x14\x63ity_or_municipality\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12\x32\n\x0cneighborhood\x18\x04 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12.\n\x08zip_code\x18\x05 \x01(\x0b\x32\x1c.google.protobuf.StringValue\"T\n\x0fRegisterRequest\x12/\n\tuser_info\x18\x01 \x01(\x0b\x32\x1c.go_webserver.users.UserInfo\x12\x10\n\x08password\x18\x02 \x01(\t\"C\n\x10RegisterResponse\x12/\n\tuser_info\x18\x01 \x01(\x0b\x32\x1c.go_webserver.users.UserInfo\"2\n\x0cLogInRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"<\n\rLogInResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\x12\x15\n\rrefresh_token\x18\x02 \x01(\t2\xb0\x01\n\x05Users\x12W\n\x08Register\x12#.go_webserver.users.RegisterRequest\x1a$.go_webserver.users.RegisterResponse\"\x00\x12N\n\x05LogIn\x12 .go_webserver.users.LogInRequest\x1a!.go_webserver.users.LogInResponse\"\x00\x42\x32Z0github.com/afaguilarr/go-example-webserver/protob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11proto/users.proto\x12\x12go_webserver.users\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x12proto/common.proto\"\xbc\x01\n\x08UserInfo\x12:\n\x0fpet_master_info\x18\x01 \x01(\x0b\x32!.go_webserver.users.PetMasterInfo\x12\x10\n\x08username\x18\x02 \x01(\t\x12\x31\n\x0b\x64\x65scription\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12/\n\x0bprofile_pic\x18\x04 \x01(\x0b\x32\x1a.go_webserver.common.Image\"\x83\x01\n\rPetMasterInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x34\n\x0e\x63ontact_number\x18\x02 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12.\n\x08location\x18\x03 \x01(\x0b\x32\x1c.go_webserver.users.Location\"\xf4\x01\n\x08Location\x12\x0f\n\x07\x63ountry\x18\x01 \x01(\t\x12\x37\n\x11state_or_province\x18\x02 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12:\n\x14\x63ity_or_municipality\x18\x03 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12\x32\n\x0cneighborhood\x18\x04 \x01(\x0b\x32\x1c.google.protobuf.StringValue\x12.\n\x08zip_code\x18\x05 \x01(\x0b\x32\x1c.google.protobuf.StringValue\"T\n\x0fRegisterRequest\x12/\n\tuser_info\x18\x01 \x01(\x0b\x32\x1c.go_webserver.users.UserInfo\x12\x10\n\x08password\x18\x02 \x01(\t\"C\n\x10RegisterResponse\x12/\n\tuser_info\x18\x01 \x01(\x0b\x32\x1c.go_webserver.users.UserInfo\"2\n\x0cLogInRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"<\n\rLogInResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\x12\x15\n\rrefresh_token\x18\x02 \x01(\t\"=\n\x13\x41uthenticateRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\"\x16\n\x14\x41uthenticateResponse\"D\n\x19RefreshAccessTokenRequest\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x15\n\rrefresh_token\x18\x02 \x01(\t\"2\n\x1aRefreshAccessTokenResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\"!\n\rLogOutRequest\x12\x10\n\x08username\x18\x01 \x01(\t\"\x10\n\x0eLogOutResponse2\xdf\x03\n\x05Users\x12W\n\x08Register\x12#.go_webserver.users.RegisterRequest\x1a$.go_webserver.users.RegisterResponse\"\x00\x12N\n\x05LogIn\x12 .go_webserver.users.LogInRequest\x1a!.go_webserver.users.LogInResponse\"\x00\x12\x63\n\x0c\x41uthenticate\x12\'.go_webserver.users.AuthenticateRequest\x1a(.go_webserver.users.AuthenticateResponse\"\x00\x12u\n\x12RefreshAccessToken\x12-.go_webserver.users.RefreshAccessTokenRequest\x1a..go_webserver.users.RefreshAccessTokenResponse\"\x00\x12Q\n\x06LogOut\x12!.go_webserver.users.LogOutRequest\x1a\".go_webserver.users.LogOutResponse\"\x00\x42\x32Z0github.com/afaguilarr/go-example-webserver/protob\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.users_pb2', globals())
@@ -37,6 +37,18 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _LOGINREQUEST._serialized_end=870
   _LOGINRESPONSE._serialized_start=872
   _LOGINRESPONSE._serialized_end=932
-  _USERS._serialized_start=935
-  _USERS._serialized_end=1111
+  _AUTHENTICATEREQUEST._serialized_start=934
+  _AUTHENTICATEREQUEST._serialized_end=995
+  _AUTHENTICATERESPONSE._serialized_start=997
+  _AUTHENTICATERESPONSE._serialized_end=1019
+  _REFRESHACCESSTOKENREQUEST._serialized_start=1021
+  _REFRESHACCESSTOKENREQUEST._serialized_end=1089
+  _REFRESHACCESSTOKENRESPONSE._serialized_start=1091
+  _REFRESHACCESSTOKENRESPONSE._serialized_end=1141
+  _LOGOUTREQUEST._serialized_start=1143
+  _LOGOUTREQUEST._serialized_end=1176
+  _LOGOUTRESPONSE._serialized_start=1178
+  _LOGOUTRESPONSE._serialized_end=1194
+  _USERS._serialized_start=1197
+  _USERS._serialized_end=1676
 # @@protoc_insertion_point(module_scope)

@@ -25,6 +25,21 @@ class UsersStub(object):
                 request_serializer=proto_dot_users__pb2.LogInRequest.SerializeToString,
                 response_deserializer=proto_dot_users__pb2.LogInResponse.FromString,
                 )
+        self.Authenticate = channel.unary_unary(
+                '/go_webserver.users.Users/Authenticate',
+                request_serializer=proto_dot_users__pb2.AuthenticateRequest.SerializeToString,
+                response_deserializer=proto_dot_users__pb2.AuthenticateResponse.FromString,
+                )
+        self.RefreshAccessToken = channel.unary_unary(
+                '/go_webserver.users.Users/RefreshAccessToken',
+                request_serializer=proto_dot_users__pb2.RefreshAccessTokenRequest.SerializeToString,
+                response_deserializer=proto_dot_users__pb2.RefreshAccessTokenResponse.FromString,
+                )
+        self.LogOut = channel.unary_unary(
+                '/go_webserver.users.Users/LogOut',
+                request_serializer=proto_dot_users__pb2.LogOutRequest.SerializeToString,
+                response_deserializer=proto_dot_users__pb2.LogOutResponse.FromString,
+                )
 
 
 class UsersServicer(object):
@@ -41,7 +56,31 @@ class UsersServicer(object):
 
     def LogIn(self, request, context):
         """LogIn receives a username and a password, and then returns both a JWT access token,
-        and a JWT refresh token
+        and a JWT refresh token.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Authenticate(self, request, context):
+        """Authenticate receives a JWT access token and its username,
+        and verifies if the access token is valid.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RefreshAccessToken(self, request, context):
+        """RefreshAccessToken receives and verifies the correctness of a JWT refresh token,
+        and returns a new valid JWT access token.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def LogOut(self, request, context):
+        """LogOut receives the information of a user, and revokes its refresh token secret, so that a new
+        Login process has to be made in order to create a new refresh token secret.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -59,6 +98,21 @@ def add_UsersServicer_to_server(servicer, server):
                     servicer.LogIn,
                     request_deserializer=proto_dot_users__pb2.LogInRequest.FromString,
                     response_serializer=proto_dot_users__pb2.LogInResponse.SerializeToString,
+            ),
+            'Authenticate': grpc.unary_unary_rpc_method_handler(
+                    servicer.Authenticate,
+                    request_deserializer=proto_dot_users__pb2.AuthenticateRequest.FromString,
+                    response_serializer=proto_dot_users__pb2.AuthenticateResponse.SerializeToString,
+            ),
+            'RefreshAccessToken': grpc.unary_unary_rpc_method_handler(
+                    servicer.RefreshAccessToken,
+                    request_deserializer=proto_dot_users__pb2.RefreshAccessTokenRequest.FromString,
+                    response_serializer=proto_dot_users__pb2.RefreshAccessTokenResponse.SerializeToString,
+            ),
+            'LogOut': grpc.unary_unary_rpc_method_handler(
+                    servicer.LogOut,
+                    request_deserializer=proto_dot_users__pb2.LogOutRequest.FromString,
+                    response_serializer=proto_dot_users__pb2.LogOutResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -102,5 +156,56 @@ class Users(object):
         return grpc.experimental.unary_unary(request, target, '/go_webserver.users.Users/LogIn',
             proto_dot_users__pb2.LogInRequest.SerializeToString,
             proto_dot_users__pb2.LogInResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Authenticate(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/go_webserver.users.Users/Authenticate',
+            proto_dot_users__pb2.AuthenticateRequest.SerializeToString,
+            proto_dot_users__pb2.AuthenticateResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RefreshAccessToken(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/go_webserver.users.Users/RefreshAccessToken',
+            proto_dot_users__pb2.RefreshAccessTokenRequest.SerializeToString,
+            proto_dot_users__pb2.RefreshAccessTokenResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def LogOut(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/go_webserver.users.Users/LogOut',
+            proto_dot_users__pb2.LogOutRequest.SerializeToString,
+            proto_dot_users__pb2.LogOutResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
