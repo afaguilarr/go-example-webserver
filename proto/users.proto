@@ -13,8 +13,17 @@ service Users {
   // and then returns the stored information.
   rpc Register (RegisterRequest) returns (RegisterResponse) {}
   // LogIn receives a username and a password, and then returns both a JWT access token,
-  // and a JWT refresh token
+  // and a JWT refresh token.
   rpc LogIn (LogInRequest) returns (LogInResponse) {}
+  // Authenticate receives a JWT access token and its username,
+  // and verifies if the access token is valid.
+  rpc Authenticate (AuthenticateRequest) returns (AuthenticateResponse) {}
+  // RefreshAccessToken receives and verifies the correctness of a JWT refresh token,
+  // and returns a new valid JWT access token.
+  rpc RefreshAccessToken (RefreshAccessTokenRequest) returns (RefreshAccessTokenResponse) {}
+  // LogOut receives the information of a user, and revokes its refresh token secret, so that a new
+  // Login process has to be made in order to create a new refresh token secret.
+  rpc LogOut (LogOutRequest) returns (LogOutResponse) {}
 }
 
 // The UserInfo message contains the non-sensitive information of the user.
@@ -64,3 +73,33 @@ message LogInResponse {
     string access_token = 1;
     string refresh_token = 2;
 }
+
+// The AuthenticateRequest message contains the access token to be verified,
+// and the username associated with it.
+message AuthenticateRequest {
+    string username = 1;
+    string access_token = 2;
+}
+
+// The AuthenticateResponse message is empty, no errors means the access token is valid.
+message AuthenticateResponse {}
+
+// The RefreshAccessTokenRequest message contains the refresh token to be verified,
+// and the username associated with it.
+message RefreshAccessTokenRequest {
+    string username = 1;
+    string refresh_token = 2;
+}
+
+// The RefreshAccessTokenResponse message contains the new access token.
+message RefreshAccessTokenResponse {
+    string access_token = 1;
+}
+
+// The LogOutRequest message contains the username of the user.
+message LogOutRequest {
+    string username = 1;
+}
+
+// The LogOutResponse message is empty, no errors means the action was successful.
+message LogOutResponse {}

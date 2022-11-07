@@ -88,9 +88,10 @@ So far I've been adding these manually to the `test/requirements.txt` file. Afte
 
 ## Updating Protos
 
-Update the `app/bin/generate_protos.sh` and `test/bin/generate_protos.sh` and then build the project by executing the `docker-compose build` command or execute the following commands:
+Update the `app/bin/generate_protos.sh` and `test/bin/generate_protos.sh` and then execute the following commands:
 ```bash
 docker-compose run go_builder sh bin/generate_protos.sh
+docker-compose build python_tests
 docker-compose run python_tests sh bin/generate_protos.sh
 ```
 
