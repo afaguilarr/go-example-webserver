@@ -118,8 +118,31 @@ func (d *DaoUsers) GetPasswordByUsername(ctx context.Context, u string) (string,
 		return "", errors.Wrap(err, "while getting the password by username")
 	}
 
-	log.Println("Found an encrypted password password with the provided username!")
+	log.Println("Found an encrypted password with the provided username!")
 	return encryptedPassword, nil
+}
+
+const GetRefreshTokenSecretByUsernameQuery = `SELECT encrypted_refresh_token_secret FROM users WHERE username = $1`
+
+func (d *DaoUsers) GetRefreshTokenSecretByUsername(ctx context.Context, u string) ([]byte, error) {
+	var encryptedRefreshTokenSecret []byte
+
+	if u == "" {
+		return []byte{}, errors.New("username can't be empty")
+	}
+
+	err := d.DB.QueryRowContext(ctx, GetRefreshTokenSecretByUsernameQuery, u).Scan(
+		&encryptedRefreshTokenSecret,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return []byte{}, err
+		}
+		return []byte{}, errors.Wrap(err, "while getting the refresh token secret by username")
+	}
+
+	log.Println("Found an encrypted refresh token secret with the provided username!")
+	return encryptedRefreshTokenSecret, nil
 }
 
 const SetRefreshTokenSecretQuery = `
@@ -142,5 +165,28 @@ func (d *DaoUsers) SetUserRefreshTokenSecret(ctx context.Context, u string, encr
 	}
 
 	log.Println("Set the refresh token secret properly!")
+	return nil
+}
+
+const RevokeRefreshTokenSecretQuery = `
+UPDATE users SET encrypted_refresh_token_secret = NULL
+  WHERE username = $1
+`
+
+// RevokeRefreshTokenSecret revokes the secret for the Refresh JWT Token.
+func (d *DaoUsers) RevokeUserRefreshTokenSecret(ctx context.Context, u string) error {
+	if u == "" {
+		return errors.New("empty value detected")
+	}
+
+	row := d.DB.QueryRowContext(ctx, RevokeRefreshTokenSecretQuery, u)
+	if row.Err() != nil {
+		if row.Err() == sql.ErrNoRows {
+			return row.Err()
+		}
+		return errors.Wrap(row.Err(), "while revoking the refresh token secret")
+	}
+
+	log.Println("Revoked the refresh token secret properly!")
 	return nil
 }

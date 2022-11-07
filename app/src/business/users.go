@@ -25,6 +25,9 @@ const (
 type BusinessUsersHandler interface {
 	Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error)
 	LogIn(ctx context.Context, req *proto.LogInRequest) (*proto.LogInResponse, error)
+	Authenticate(ctx context.Context, req *proto.AuthenticateRequest) (*proto.AuthenticateResponse, error)
+	RefreshAccessToken(ctx context.Context, req *proto.RefreshAccessTokenRequest) (*proto.RefreshAccessTokenResponse, error)
+	LogOut(ctx context.Context, req *proto.LogOutRequest) (*proto.LogOutResponse, error)
 }
 
 type BusinessUsers struct {
@@ -168,7 +171,7 @@ func (bu *BusinessUsers) DecryptPassword(ctx context.Context, username, password
 func GenerateJWT(secret []byte, username string, d time.Duration) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(d)
+	claims["exp"] = time.Now().Add(d).Unix()
 	claims["authorized"] = true
 	claims["user"] = username
 
@@ -177,4 +180,100 @@ func GenerateJWT(secret []byte, username string, d time.Duration) (string, error
 		return "", errors.Wrap(err, "while signing JWT")
 	}
 	return tokenString, nil
+}
+
+// Struct that will be encoded to a JWT.
+// We add jwt.StandardClaims as an embedded type, to provide fields like expiry time
+type Claims struct {
+	ExpectedUsername string `json:"-"`
+	Err              error  `json:"-"`
+	Username         string `json:"user"`
+	Authorized       bool   `json:"authorized"`
+	jwt.StandardClaims
+}
+
+// Valid validates time based claims "exp", and also validates the expected user for the token.
+func (c *Claims) Valid() error {
+	now := time.Now().Unix()
+
+	if !c.VerifyExpiresAt(now, false) {
+		delta := time.Unix(now, 0).Sub(time.Unix(c.ExpiresAt, 0))
+		c.Err = fmt.Errorf("token is expired by %v", delta)
+	}
+
+	if c.ExpectedUsername != c.Username {
+		c.Err = fmt.Errorf("the token username is not correct")
+	}
+
+	return c.Err
+}
+
+func (bu *BusinessUsers) Authenticate(ctx context.Context, req *proto.AuthenticateRequest) (*proto.AuthenticateResponse, error) {
+	secret := []byte(os.Getenv(accessTokenSecretKey))
+
+	claims := &Claims{ExpectedUsername: req.Username}
+	token, err := jwt.ParseWithClaims(req.AccessToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return nil, status.Error(codes.Unauthenticated, "invalid JWT token signature")
+		}
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while parsing the access token: %s", err.Error()))
+	}
+	if !token.Valid {
+		return nil, status.Error(codes.Unauthenticated, fmt.Sprintf("invalid JWT token signature: %s", claims.Err.Error()))
+	}
+	log.Println("Access Token is valid!")
+
+	return &proto.AuthenticateResponse{}, nil
+}
+
+func (bu *BusinessUsers) RefreshAccessToken(ctx context.Context, req *proto.RefreshAccessTokenRequest) (*proto.RefreshAccessTokenResponse, error) {
+	encryptedRefreshTokenSecret, err := bu.DaoUsers.GetRefreshTokenSecretByUsername(ctx, req.Username)
+	if len(encryptedRefreshTokenSecret) == 0 || err == sql.ErrNoRows {
+		// Not mentioning explicitly that the user is non-existent
+		return nil, status.Error(codes.Internal, "while getting the user refresh token secret: unknown error occurred")
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while getting the user refresh token secret: %s", err.Error()))
+	}
+
+	claims := &Claims{ExpectedUsername: req.Username}
+	token, err := jwt.ParseWithClaims(req.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return encryptedRefreshTokenSecret, nil
+	})
+	if err != nil {
+		if err == jwt.ErrSignatureInvalid {
+			return nil, status.Error(codes.Unauthenticated, "invalid JWT token signature")
+		}
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while parsing the refresh token: %s", err.Error()))
+	}
+	if !token.Valid {
+		return nil, status.Error(codes.Unauthenticated, fmt.Sprintf("invalid JWT token signature: %s", claims.Err.Error()))
+	}
+	log.Println("Refresh Token is valid!")
+
+	secret := []byte(os.Getenv(accessTokenSecretKey))
+	accessToken, err := GenerateJWT(secret, req.Username, 1*time.Minute)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while generating access JWT token: %s", err.Error()))
+	}
+
+	return &proto.RefreshAccessTokenResponse{
+		AccessToken: accessToken,
+	}, nil
+}
+
+func (bu *BusinessUsers) LogOut(ctx context.Context, req *proto.LogOutRequest) (*proto.LogOutResponse, error) {
+	err := bu.DaoUsers.RevokeUserRefreshTokenSecret(ctx, req.Username)
+	if err == sql.ErrNoRows {
+		// Not mentioning explicitly that the user is non-existent
+		return nil, status.Error(codes.Internal, "while revoking the user refresh token secret: unknown error occurred")
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while revoking the user refresh token secret: %s", err.Error()))
+	}
+
+	return &proto.LogOutResponse{}, nil
 }
