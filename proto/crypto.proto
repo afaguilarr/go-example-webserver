@@ -15,21 +15,21 @@ service Crypto {
 // The EncryptRequest message contains strings for a context and an unencrypted value.
 message EncryptRequest {
   string context = 1;
-  string unencrypted_value = 2;
+  bytes unencrypted_value = 2;
 }
 
 // The EncryptResponse message contains strings for an encrypted value.
 message EncryptResponse {
-  string encrypted_value = 1;
+  bytes encrypted_value = 1;
 }
 
 // The DecryptRequest message contains strings for a context and an encrypted value.
 message DecryptRequest {
   string context = 1;
-  string encrypted_value = 2;
+  bytes encrypted_value = 2;
 }
 
 // The DecryptResponse message contains strings for a decrypted value.
 message DecryptResponse {
-  string decrypted_value = 1;
+  bytes decrypted_value = 1;
 }
