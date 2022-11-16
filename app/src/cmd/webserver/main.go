@@ -93,7 +93,7 @@ func testRPC(w http.ResponseWriter, r *http.Request) {
 		defer cancel()
 		resp, err := cc.Encrypt(ctx, &proto.EncryptRequest{
 			Context:          "jiji",
-			UnencryptedValue: "jojo",
+			UnencryptedValue: []byte("jojo"),
 		})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)

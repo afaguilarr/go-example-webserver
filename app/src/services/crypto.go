@@ -37,7 +37,7 @@ func (sc *ServicesCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 		return nil, status.Error(codes.InvalidArgument, "context can't be an empty string")
 	}
 
-	if req.UnencryptedValue == "" {
+	if len(req.UnencryptedValue) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "unencrypted value can't be an empty string")
 	}
 
@@ -61,7 +61,7 @@ func (sc *ServicesCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest
 		return nil, status.Error(codes.InvalidArgument, "context can't be an empty string")
 	}
 
-	if req.EncryptedValue == "" {
+	if len(req.EncryptedValue) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "encrypted value can't be an empty string")
 	}
 

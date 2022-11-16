@@ -69,10 +69,10 @@ func (bu *BusinessUsers) Register(ctx context.Context, req *proto.RegisterReques
 	}, nil
 }
 
-func (bu *BusinessUsers) EncryptPassword(ctx context.Context, username, password string) (*string, error) {
+func (bu *BusinessUsers) EncryptPassword(ctx context.Context, username, password string) ([]byte, error) {
 	encryptReq := &proto.EncryptRequest{
 		Context:          PasswordEncryptionContext(username),
-		UnencryptedValue: password,
+		UnencryptedValue: []byte(password),
 	}
 
 	encryptResp, err := bu.CryptoClient.Encrypt(
@@ -83,14 +83,10 @@ func (bu *BusinessUsers) EncryptPassword(ctx context.Context, username, password
 		return nil, status.Error(codes.Internal, fmt.Sprintf("while encrypting password: %s", err.Error()))
 	}
 
-	return &encryptResp.EncryptedValue, nil
+	return encryptResp.EncryptedValue, nil
 }
 
-func PasswordEncryptionContext(username string) string {
-	return fmt.Sprintf("{username:%s,dataType:password}", username)
-}
-
-func ProtoUserToDaoUser(protoUser *proto.UserInfo, encryptedPassword *string) *dao.User {
+func ProtoUserToDaoUser(protoUser *proto.UserInfo, encryptedPassword []byte) *dao.User {
 	var d *string
 
 	petMaster := protoUser.PetMasterInfo
@@ -111,7 +107,7 @@ func (bu *BusinessUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*p
 	unmatchedUsernameAndPass := status.Error(codes.InvalidArgument, "username and password don't match")
 
 	encryptedPassword, err := bu.DaoUsers.GetPasswordByUsername(ctx, req.Username)
-	if encryptedPassword == "" || err == sql.ErrNoRows {
+	if len(encryptedPassword) == 0 || err == sql.ErrNoRows {
 		return nil, unmatchedUsernameAndPass
 	}
 	if err != nil {
@@ -123,7 +119,7 @@ func (bu *BusinessUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*p
 		return nil, status.Error(codes.Internal, fmt.Sprintf("while decrypting the user password: %s", err.Error()))
 	}
 
-	if *password != req.Password {
+	if string(password) != req.Password {
 		return nil, unmatchedUsernameAndPass
 	}
 	log.Println("User and Password matched!")
@@ -151,7 +147,7 @@ func (bu *BusinessUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*p
 	}, nil
 }
 
-func (bu *BusinessUsers) DecryptPassword(ctx context.Context, username, password string) (*string, error) {
+func (bu *BusinessUsers) DecryptPassword(ctx context.Context, username string, password []byte) ([]byte, error) {
 	decryptReq := &proto.DecryptRequest{
 		Context:        PasswordEncryptionContext(username),
 		EncryptedValue: password,
@@ -165,7 +161,7 @@ func (bu *BusinessUsers) DecryptPassword(ctx context.Context, username, password
 		return nil, status.Error(codes.Internal, fmt.Sprintf("while decrypting password: %s", err.Error()))
 	}
 
-	return &decryptResp.DecryptedValue, nil
+	return decryptResp.DecryptedValue, nil
 }
 
 func GenerateJWT(secret []byte, username string, d time.Duration) (string, error) {

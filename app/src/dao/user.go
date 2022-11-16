@@ -5,13 +5,13 @@ import "context"
 type User struct {
 	Username          string
 	Description       *string
-	EncryptedPassword *string
+	EncryptedPassword []byte
 	PetMasterInfo     *PetMaster
 }
 
 type DaoUsersHandler interface {
 	InsertUser(ctx context.Context, u *User) error
-	GetPasswordByUsername(ctx context.Context, u string) (string, error)
+	GetPasswordByUsername(ctx context.Context, u string) ([]byte, error)
 	GetRefreshTokenSecretByUsername(ctx context.Context, u string) ([]byte, error)
 	SetUserRefreshTokenSecret(ctx context.Context, u string, encryptedRefreshToken []byte) error
 	RevokeUserRefreshTokenSecret(ctx context.Context, u string) error
