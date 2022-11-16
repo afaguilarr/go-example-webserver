@@ -1,14 +1,13 @@
 package business
 
 import (
+	"bytes"
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"database/sql"
-	"encoding/base64"
 	"io"
-	"strings"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/proto"
@@ -64,9 +63,9 @@ func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 	cipherText := make([]byte, len(saltedValue))
 	cfb.XORKeyStream(cipherText, saltedValue)
 
-	encryptedValue := base64.StdEncoding.EncodeToString(cipherText)
+	// encryptedValue := base64.StdEncoding.EncodeToString(cipherText)
 	resp := &proto.EncryptResponse{
-		EncryptedValue: encryptedValue,
+		EncryptedValue: cipherText,
 	}
 
 	ed := &dao.EncryptionData{
@@ -116,18 +115,15 @@ func (bc *BusinessCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest
 	}
 	cfb := cipher.NewCFBDecrypter(block, ed.IV)
 
-	cipherText, err := base64.StdEncoding.DecodeString(req.EncryptedValue)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "while generating cipherText: %s", err.Error())
-	}
-
+	// cipherText, err := base64.StdEncoding.DecodeString(req.EncryptedValue)
+	cipherText := req.EncryptedValue
 	saltedValue := make([]byte, len(cipherText))
 	cfb.XORKeyStream(saltedValue, cipherText)
-	decryptedValue := string(saltedValue[0:(len(saltedValue) - pwSaltBytes)])
+	decryptedValue := saltedValue[0:(len(saltedValue) - pwSaltBytes)]
 
 	// For some reason, the decrypted value included an indefinite number of \u0000 characters
-	// at the beginning of the string. Trimming those looks like it fixes the issue.
-	decryptedValue = strings.Trim(decryptedValue, "\u0000")
+	// at the beginning of the slice. Trimming those looks like it fixes the issue.
+	decryptedValue = bytes.Trim(decryptedValue, "\u0000")
 	resp := &proto.DecryptResponse{
 		DecryptedValue: decryptedValue,
 	}

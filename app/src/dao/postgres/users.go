@@ -101,11 +101,11 @@ func (d *DaoUsers) InsertUser(ctx context.Context, u *dao.User) error {
 const GetPasswordByUsernameQuery = `SELECT encrypted_password FROM users WHERE username = $1`
 
 // GetPasswordByUsername returns the encrypted password of a user, querying it by its username
-func (d *DaoUsers) GetPasswordByUsername(ctx context.Context, u string) (string, error) {
-	var encryptedPassword string
+func (d *DaoUsers) GetPasswordByUsername(ctx context.Context, u string) ([]byte, error) {
+	var encryptedPassword []byte
 
 	if u == "" {
-		return "", errors.New("username can't be empty")
+		return []byte{}, errors.New("username can't be empty")
 	}
 
 	err := d.DB.QueryRowContext(ctx, GetPasswordByUsernameQuery, u).Scan(
@@ -113,9 +113,9 @@ func (d *DaoUsers) GetPasswordByUsername(ctx context.Context, u string) (string,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", err
+			return []byte{}, err
 		}
-		return "", errors.Wrap(err, "while getting the password by username")
+		return []byte{}, errors.Wrap(err, "while getting the password by username")
 	}
 
 	log.Println("Found an encrypted password with the provided username!")
