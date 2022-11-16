@@ -63,7 +63,6 @@ func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 	cipherText := make([]byte, len(saltedValue))
 	cfb.XORKeyStream(cipherText, saltedValue)
 
-	// encryptedValue := base64.StdEncoding.EncodeToString(cipherText)
 	resp := &proto.EncryptResponse{
 		EncryptedValue: cipherText,
 	}
@@ -115,7 +114,6 @@ func (bc *BusinessCrypto) Decrypt(ctx context.Context, req *proto.DecryptRequest
 	}
 	cfb := cipher.NewCFBDecrypter(block, ed.IV)
 
-	// cipherText, err := base64.StdEncoding.DecodeString(req.EncryptedValue)
 	cipherText := req.EncryptedValue
 	saltedValue := make([]byte, len(cipherText))
 	cfb.XORKeyStream(saltedValue, cipherText)
