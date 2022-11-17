@@ -134,7 +134,13 @@ func (bu *BusinessUsers) LogIn(ctx context.Context, req *proto.LogInRequest) (*p
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "while generating refresh token secret: %s", err.Error())
 	}
-	bu.DaoUsers.SetUserRefreshTokenSecret(ctx, req.Username, refreshTokenSecret)
+
+	encryptedRefreshTokenSecret, err := bu.EncryptRefreshTokenSecret(ctx, req.Username, refreshTokenSecret)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while calling Encrypt RPC: %s", err.Error()))
+	}
+	log.Println("Refresh Token Secret was encrypted successfully!")
+	bu.DaoUsers.SetUserRefreshTokenSecret(ctx, req.Username, encryptedRefreshTokenSecret)
 
 	refreshToken, err := GenerateJWT(refreshTokenSecret, req.Username, 150*time.Hour)
 	if err != nil {
@@ -176,6 +182,23 @@ func GenerateJWT(secret []byte, username string, d time.Duration) (string, error
 		return "", errors.Wrap(err, "while signing JWT")
 	}
 	return tokenString, nil
+}
+
+func (bu *BusinessUsers) EncryptRefreshTokenSecret(ctx context.Context, username string, refreshTokenSecret []byte) ([]byte, error) {
+	encryptReq := &proto.EncryptRequest{
+		Context:          RefreshTokenSecretEncryptionContext(username),
+		UnencryptedValue: refreshTokenSecret,
+	}
+
+	encryptResp, err := bu.CryptoClient.Encrypt(
+		ctx,
+		encryptReq,
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while encrypting refresh token secret: %s", err.Error()))
+	}
+
+	return encryptResp.EncryptedValue, nil
 }
 
 // Struct that will be encoded to a JWT.
@@ -235,9 +258,14 @@ func (bu *BusinessUsers) RefreshAccessToken(ctx context.Context, req *proto.Refr
 		return nil, status.Error(codes.Internal, fmt.Sprintf("while getting the user refresh token secret: %s", err.Error()))
 	}
 
+	refreshTokenSecret, err := bu.DecryptRefreshTokenSecret(ctx, req.Username, encryptedRefreshTokenSecret)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while decrypting the user Refresh Token Secret: %s", err.Error()))
+	}
+
 	claims := &Claims{ExpectedUsername: req.Username}
 	token, err := jwt.ParseWithClaims(req.RefreshToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return encryptedRefreshTokenSecret, nil
+		return refreshTokenSecret, nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
@@ -259,6 +287,23 @@ func (bu *BusinessUsers) RefreshAccessToken(ctx context.Context, req *proto.Refr
 	return &proto.RefreshAccessTokenResponse{
 		AccessToken: accessToken,
 	}, nil
+}
+
+func (bu *BusinessUsers) DecryptRefreshTokenSecret(ctx context.Context, username string, encryptedRefreshTokenSecret []byte) ([]byte, error) {
+	decryptReq := &proto.DecryptRequest{
+		Context:        RefreshTokenSecretEncryptionContext(username),
+		EncryptedValue: encryptedRefreshTokenSecret,
+	}
+
+	decryptResp, err := bu.CryptoClient.Decrypt(
+		ctx,
+		decryptReq,
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, fmt.Sprintf("while decrypting Refresh Token Secret: %s", err.Error()))
+	}
+
+	return decryptResp.DecryptedValue, nil
 }
 
 func (bu *BusinessUsers) LogOut(ctx context.Context, req *proto.LogOutRequest) (*proto.LogOutResponse, error) {

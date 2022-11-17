@@ -53,12 +53,11 @@ func (bc *BusinessCrypto) Encrypt(ctx context.Context, req *proto.EncryptRequest
 
 	cfb := cipher.NewCFBEncrypter(block, iv)
 
-	plainText := []byte(req.UnencryptedValue)
 	salts, err := generateRandomBytes(pwSaltBytes)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "while generating salts: %s", err.Error())
 	}
-	saltedValue := getSaltedValue(plainText, salts)
+	saltedValue := getSaltedValue(req.UnencryptedValue, salts)
 
 	cipherText := make([]byte, len(saltedValue))
 	cfb.XORKeyStream(cipherText, saltedValue)
