@@ -1,0 +1,26 @@
+basePath: /api
+consumes:
+    - application/json
+host: localhost
+info:
+    contact:
+        email: afaguilarr@unal.edu.co
+        name: Andres Felipe Aguilar Rendon
+        url: https://github.com/afaguilarr/go-example-webserver
+    description: This is the public API exposing the features from all other microservices composing this example application.
+    license:
+        name: MIT
+        url: http://opensource.org/licenses/MIT
+    version: 0.0.1
+paths: {}
+produces:
+    - application/json
+schemes:
+    - http
+    - https
+securityDefinitions:
+    bearerAuth:
+        in: header
+        name: Authorization
+        type: apiKey
+swagger: "2.0"
