@@ -1,0 +1,36 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the public API exposing the features from all other microservices composing this example application.",
+    "contact": {
+      "name": "Andres Felipe Aguilar Rendon",
+      "url": "https://github.com/afaguilarr/go-example-webserver",
+      "email": "afaguilarr@unal.edu.co"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    },
+    "version": "0.0.1"
+  },
+  "host": "localhost",
+  "basePath": "/api",
+  "paths": {},
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}

@@ -13,6 +13,7 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install --yes --quiet \
       unzip \
+      jq \
     && rm --force --recursive /var/lib/apt/lists/*
 
 # Install grpcurl
@@ -31,6 +32,10 @@ RUN cd "/tmp/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m)/" && \
     # This step is really important, since it copies all the well known types where protoc will find them
     cp --recursive include/google/protobuf/* /usr/local/include/google/protobuf/ && \
     rm -rf "/tmp/protoc-${PROTOC_VERSION}-$(uname -s)-$(uname -m)/"
+
+# Download go-swagger and install to /usr/local/bin
+RUN curl -o /usr/local/bin/swagger -L'#' "$(curl -s https://api.github.com/repos/go-swagger/go-swagger/releases/latest | jq -r '.assets[] | select(.name | contains("'"$(uname | tr '[:upper:]' '[:lower:]')"'_amd64")) | .browser_download_url')"
+RUN chmod +x /usr/local/bin/swagger
 
 # Install protoc-gen-go (necessary to compile protos)
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28

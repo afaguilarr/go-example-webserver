@@ -75,6 +75,7 @@ services:
     volumes:
       - ./proto:/app/proto
       - ./app/src:/app/src
+      - ./app/swagger:/app/swagger
       - ./app/bin:/app/bin
       - ./.env:/app/.env
 
@@ -192,3 +193,11 @@ services:
     volumes:
       - ./test:/app
       - ./.env:/app/.env
+
+  swagger-ui:
+    container_name: swagger-ui
+    image: swaggerapi/swagger-ui
+    environment:
+      - SWAGGER_JSON=/swagger/swagger.json
+    volumes:
+      - ./app/swagger:/swagger

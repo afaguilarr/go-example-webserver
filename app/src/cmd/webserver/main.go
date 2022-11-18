@@ -1,3 +1,28 @@
+// Package webserver.
+//
+// This is the public API exposing the features from all other microservices composing this example application.
+//
+//		Schemes: http, https
+//		Host: localhost
+//		BasePath: /api
+//		Version: 0.0.1
+//		License: MIT http://opensource.org/licenses/MIT
+//		Contact: Andres Felipe Aguilar Rendon<afaguilarr@unal.edu.co> https://github.com/afaguilarr/go-example-webserver
+//
+//		Consumes:
+//		- application/json
+//
+//		Produces:
+//		- application/json
+//
+//	 SecurityDefinitions:
+//		  bearerAuth:
+//		    type: apiKey
+//		    in: header
+//		    name: Authorization
+//		    bearerFormat: JWT # optional, arbitrary value for documentation purposes
+//
+// swagger:meta
 package main
 
 import (

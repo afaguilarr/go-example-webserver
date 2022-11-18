@@ -95,12 +95,29 @@ docker-compose build python_tests
 docker-compose run python_tests sh bin/generate_protos.sh
 ```
 
+## Updating Webserver endpoints
+
+In order to modify the webserver endpoints, we have to follow some guidelines related to the go-swagger spec generation:
+* To generate the go swagger files:
+```bash
+docker-compose run go_builder swagger generate spec -o ./swagger/swagger.yaml
+docker-compose run go_builder swagger generate spec -o ./swagger/swagger.json
+```
+
+## Check the Swagger docs (HTML)
+
+Going to the `localhost/swagger` URL in a browser (after running the project) should be enough!
+
 ## Call gRPC endpoints manually
 
 Execute the following command:
 ```bash
 docker-compose run go_builder grpcurl -plaintext -d '${REQUEST_BODY}' ${MICROSERVICE}:8080 go_webserver.${MICROSERVICE}.${SERVICE}/${RPC}
 ```
+
+## Call Webserver endpoints manually
+
+Will refine this section soon but the webserver endpoints should be accessible via postman, curl or any other http client by calling the `localhost/api` URL.
 
 ## Changes and Pull Requests
 
@@ -110,7 +127,7 @@ Even for the repo administrators.
 ## Github Releases
 
 To understand how Github releases work for this repository, this documentation should be useful: https://github.com/go-modules-by-example/index/blob/master/009_submodules/README.md.
-This section will probably change once a React.js UI is added.
+This section will probably change once a Vue js UI is added.
 
 ## Dependabot
 
