@@ -27,77 +27,20 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/afaguilarr/go-example-webserver/app/src/cmd"
 	"github.com/afaguilarr/go-example-webserver/app/src/crypto_client"
-	"github.com/afaguilarr/go-example-webserver/app/src/dao"
 	"github.com/afaguilarr/go-example-webserver/app/src/http_helpers"
-	"github.com/afaguilarr/go-example-webserver/app/src/services"
 	"github.com/afaguilarr/go-example-webserver/proto"
 	"github.com/joho/godotenv"
-	"github.com/pkg/errors"
 
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
-
-const (
-	helloWorldDBPrefix = "HELLO_WORLD_"
-)
-
-type world struct {
-	Name string `json:"name"`
-}
-
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	log.Println("Hello world called")
-	switch r.Method {
-
-	case http.MethodGet:
-		log.Println("Hello world GET called")
-		_, err := fmt.Fprint(w, "Hello world")
-		if err != nil {
-			log.Fatalf("Something went wrong with the 'Hello World': %s", err)
-		}
-
-	case http.MethodPost:
-		log.Println("Hello world POST called")
-
-		var wo world
-		body, err := io.ReadAll(r.Body)
-		log.Printf("The request's body is\n%s\n", string(body))
-		if err != nil {
-			http_helpers.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
-			return
-		}
-
-		err = json.Unmarshal(body, &wo)
-		log.Printf("The parsed entity is\n%s\n", wo)
-		if err != nil {
-			http_helpers.ErrorHandler(w, r, http.StatusBadRequest, "Error 400, couldn't parse world JSON")
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		jsonResp, err := json.Marshal(wo)
-		log.Printf("The response's body is \n%s\n", string(jsonResp))
-		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
-		}
-
-		_, err = w.Write(jsonResp)
-		if err != nil {
-			log.Fatalf("Error happened writing the JSON response. Err: %s", err)
-		}
-		return
-	}
-}
 
 func testRPC(w http.ResponseWriter, r *http.Request) {
 	log.Println("Test RPC called")
@@ -128,9 +71,18 @@ func testRPC(w http.ResponseWriter, r *http.Request) {
 			log.Fatalf("Something went wrong with the 'gRPC test endpoint': %s", err)
 		}
 	default:
-		log.Fatalf("Unsupported Method %s", r.Method)
+		http_helpers.ErrorHandler(w, r, http.StatusMethodNotAllowed, "")
 	}
 }
+
+// MethodNotAllowed replies to the request with an HTTP 405 method not allowed.
+func MethodNotAllowed(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
+}
+
+// MethodNotAllowedHandler returns a simple request handler
+// that replies to each request with a “405 method not allowed” reply.
+func MethodNotAllowedHandler() http.Handler { return http.HandlerFunc(MethodNotAllowed) }
 
 func main() {
 	err := godotenv.Load("./.env")
@@ -138,20 +90,15 @@ func main() {
 		log.Fatalf("there was an error loading the env variables: %s", err.Error())
 	}
 
-	dbch := dao.NewDBConnectionHandler(helloWorldDBPrefix)
-	db, err := dbch.CreateDBConnection()
-	if err != nil {
-		panic(errors.Wrap(err, "while creating DB connection"))
-	}
-	defer db.Close()
-
-	hnHandler := services.NewHelloNameHandler(db)
-
 	r := mux.NewRouter()
-	r.HandleFunc("/", helloWorld)
-	r.HandleFunc("/name", hnHandler.HelloGenericName)
-	r.HandleFunc("/name/{name}", hnHandler.HelloName)
-	r.HandleFunc("/test/rpc", testRPC)
+	// Handler for non existent routes
+	r.NotFoundHandler = http.NotFoundHandler()
+	// Handler for any Method Not Allowed error
+	r.MethodNotAllowedHandler = MethodNotAllowedHandler()
+	r.HandleFunc("/login", testRPC)
+	logOutRoute := r.PathPrefix("/logout").Subrouter()
+	logOutRoute.HandleFunc("", uh.RefreshToken)
+	logOutRoute.Use(uh.MiddlewareValidateRefreshToken)
 
 	srv := &http.Server{
 		Addr: "0.0.0.0:8080",
