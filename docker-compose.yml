@@ -176,7 +176,9 @@ services:
       - "webserver"
     environment:
       - DOCKER_WEBSERVER_NAME=${DOCKER_WEBSERVER_NAME}
-      - DOLLAR_SIGN=${DOLLAR_SIGN}
+      # Necessary variable to make nginx work with the 'envsubst' tool
+      # more info at https://serverfault.com/questions/577370/how-can-i-use-environment-variables-in-nginx-conf
+      - DOLLAR_SIGN=$
     command: /bin/bash -c "envsubst < /etc/nginx/conf.d/my_site.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     ports:
       - 80:80
