@@ -174,10 +174,14 @@ services:
       target: nginx_custom
     depends_on:
       - "webserver"
+    environment:
+      - DOCKER_WEBSERVER_NAME=${DOCKER_WEBSERVER_NAME}
+      - DOLLAR_SIGN=${DOLLAR_SIGN}
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/my_site.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
     ports:
       - 80:80
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/my_site.template
       - ./nginx/html/:/usr/share/nginx/html
 
   python_tests:
