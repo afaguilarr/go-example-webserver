@@ -113,7 +113,7 @@ COPY .env .
 #
 # nginx container
 #
-FROM nginx:1.23 as nginx_custom
+FROM nginx:1.23.3 as nginx_custom
 
 # These lines modify the default configuration and html files for nginx
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
