@@ -5,7 +5,7 @@
 #
 # go builder
 #
-FROM golang:1.19 as go_builder
+FROM golang:1.20 as go_builder
 
 WORKDIR /app
 
