@@ -8,7 +8,7 @@ require (
 	github.com/afaguilarr/go-example-webserver/proto v0.0.0-alpha.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
-	github.com/joho/godotenv v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/pkg/errors v0.9.1
 	github.com/pressly/goose/v3 v3.7.0
 	google.golang.org/grpc v1.51.0
